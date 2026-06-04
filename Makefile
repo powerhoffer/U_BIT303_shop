@@ -1,3 +1,5 @@
+GF ?= /usr/local/go/gopath_dir/bin/gf
+
 .PHONY: run test tidy dao service
 
 run:
@@ -10,7 +12,7 @@ tidy:
 	go mod tidy
 
 dao:
-	gf gen dao
+	$(GF) gen dao
 
 service:
-	gf gen service
+	$(GF) gen service

@@ -1,13 +1,25 @@
+// ================================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// You can delete these comments if you wish manually maintain this interface file.
+// ================================================================================
+
 package service
 
-import "github.com/gogf/gf/v2/net/ghttp"
+import (
+	"github.com/gogf/gf/v2/net/ghttp"
+)
 
-type IMiddleware interface {
-	CORS(r *ghttp.Request)
-	ResponseHandler(r *ghttp.Request)
-}
+type (
+	IMiddleware interface {
+		CORS(r *ghttp.Request)
+		ResponseHandler(r *ghttp.Request)
+		EmployeeAuth(r *ghttp.Request)
+	}
+)
 
-var localMiddleware IMiddleware
+var (
+	localMiddleware IMiddleware
+)
 
 func Middleware() IMiddleware {
 	if localMiddleware == nil {

@@ -25,6 +25,24 @@ var Main = gcmd.Command{
 			)
 			group.Bind(controller.Health)
 		})
+		s.Group("/employee", func(group *ghttp.RouterGroup) {
+			group.Middleware(
+				service.Middleware().CORS,
+				service.Middleware().ResponseHandler,
+			)
+			group.Bind(
+				controller.Employee.Register,
+				controller.Employee.Login,
+			)
+			group.Group("/", func(group *ghttp.RouterGroup) {
+				group.Middleware(service.Middleware().EmployeeAuth)
+				group.Bind(
+					controller.Employee.Logout,
+					controller.Employee.Info,
+					controller.Employee.UpdatePassword,
+				)
+			})
+		})
 		s.Run()
 		return nil
 	},

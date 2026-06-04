@@ -1,7 +1,13 @@
 package middleware
 
 import (
+	"strings"
+
+	"bit303_shop/internal/consts"
+	"bit303_shop/internal/dao"
+	"bit303_shop/internal/model/entity"
 	"bit303_shop/internal/service"
+	"bit303_shop/utility"
 	"bit303_shop/utility/response"
 
 	"github.com/gogf/gf/v2/errors/gcode"
@@ -43,4 +49,43 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 		return
 	}
 	response.JsonExit(r, code.Code(), "", res)
+}
+
+func (s *sMiddleware) EmployeeAuth(r *ghttp.Request) {
+	token := strings.TrimSpace(r.Header.Get("Authorization"))
+	if token == "" {
+		response.JsonExit(r, 401, "未登录或登录已过期")
+		return
+	}
+	if strings.HasPrefix(token, "Bearer ") {
+		token = strings.TrimSpace(strings.TrimPrefix(token, "Bearer "))
+	}
+	claims, err := utility.ParseEmployeeToken(token)
+	if err != nil || claims.EmployeeId == 0 {
+		response.JsonExit(r, 401, "未登录或登录已过期")
+		return
+	}
+
+	columns := dao.EmployeeInfo.Columns()
+	var employee entity.EmployeeInfo
+	err = dao.EmployeeInfo.Ctx(r.Context()).
+		Where(columns.Id, claims.EmployeeId).
+		WhereNull(columns.DeletedAt).
+		Scan(&employee)
+	if err != nil {
+		response.JsonExit(r, 500, "员工信息查询失败")
+		return
+	}
+	if employee.Id == 0 {
+		response.JsonExit(r, 401, "员工账号不存在")
+		return
+	}
+	if employee.Status != consts.EmployeeStatusNormal {
+		response.JsonExit(r, 403, "员工账号已禁用")
+		return
+	}
+
+	r.SetCtxVar(consts.CtxEmployeeId, employee.Id)
+	r.SetCtxVar(consts.CtxEmployeeUsername, employee.Username)
+	r.Middleware.Next()
 }

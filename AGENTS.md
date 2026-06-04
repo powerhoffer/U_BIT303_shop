@@ -5,6 +5,7 @@
 - This project is developed from 0 to 1.
 - Keep the current stage focused on the feature being requested.
 - Do not add unrelated mall features early.
+- After each feature is completed, compare the implementation with the monolithic GoFrame reference project at `/home/lxh/goframe-shop-v2-main`.
 - For each backend feature, follow the user's GoFrame workflow:
   1. Design table structure and update initialization SQL.
   2. Run `gf gen dao` to generate dao/do/entity when tables are ready.

@@ -58,6 +58,76 @@ type UpdatePasswordRes struct {
 	Message string `json:"message"`
 }
 
+type ManageCreateReq struct {
+	g.Meta   `path:"/manage/create" method:"post" tags:"员工管理" summary:"新增员工"`
+	Username string `json:"username" v:"required|length:3,64#账号不能为空|账号长度应为3到64位"`
+	Password string `json:"password" v:"required|length:6,64#密码不能为空|密码长度应为6到64位"`
+	RealName string `json:"real_name" v:"max-length:64#姓名最多64位"`
+	Phone    string `json:"phone" v:"max-length:20#手机号最多20位"`
+	Email    string `json:"email" v:"email|max-length:128#邮箱格式不正确|邮箱最多128位"`
+}
+
+type ManageCreateRes struct {
+	Employee EmployeeBase `json:"employee"`
+}
+
+type ManageListReq struct {
+	g.Meta   `path:"/manage/list" method:"get" tags:"员工管理" summary:"员工列表"`
+	Page     int    `json:"page" in:"query" d:"1" v:"min:1#分页号码错误"`
+	Size     int    `json:"size" in:"query" d:"10" v:"max:50#分页数量最大50条"`
+	Username string `json:"username" in:"query"`
+	RealName string `json:"real_name" in:"query"`
+	Status   int    `json:"status" in:"query" d:"-1"`
+}
+
+type ManageListRes struct {
+	List  []EmployeeBase `json:"list"`
+	Total int            `json:"total"`
+	Page  int            `json:"page"`
+	Size  int            `json:"size"`
+}
+
+type ManageDetailReq struct {
+	g.Meta `path:"/manage/detail" method:"get" tags:"员工管理" summary:"员工详情"`
+	Id     uint `json:"id" in:"query" v:"required|min:1#员工ID不能为空|员工ID错误"`
+}
+
+type ManageDetailRes struct {
+	Employee EmployeeBase `json:"employee"`
+}
+
+type ManageUpdateReq struct {
+	g.Meta   `path:"/manage/update" method:"post" tags:"员工管理" summary:"编辑员工信息"`
+	Id       uint   `json:"id" v:"required|min:1#员工ID不能为空|员工ID错误"`
+	RealName string `json:"real_name" v:"max-length:64#姓名最多64位"`
+	Phone    string `json:"phone" v:"max-length:20#手机号最多20位"`
+	Email    string `json:"email" v:"email|max-length:128#邮箱格式不正确|邮箱最多128位"`
+}
+
+type ManageUpdateRes struct {
+	Employee EmployeeBase `json:"employee"`
+}
+
+type ManageStatusReq struct {
+	g.Meta `path:"/manage/status" method:"post" tags:"员工管理" summary:"启用或禁用员工"`
+	Id     uint   `json:"id" v:"required|min:1#员工ID不能为空|员工ID错误"`
+	Status string `json:"status" v:"required|in:0,1#状态不能为空|状态只能是0或1"`
+}
+
+type ManageStatusRes struct {
+	Message string `json:"message"`
+}
+
+type ManageResetPasswordReq struct {
+	g.Meta   `path:"/manage/reset-password" method:"post" tags:"员工管理" summary:"重置员工密码"`
+	Id       uint   `json:"id" v:"required|min:1#员工ID不能为空|员工ID错误"`
+	Password string `json:"password" v:"required|length:6,64#密码不能为空|密码长度应为6到64位"`
+}
+
+type ManageResetPasswordRes struct {
+	Message string `json:"message"`
+}
+
 type EmployeeBase struct {
 	Id       uint   `json:"id"`
 	Username string `json:"username"`

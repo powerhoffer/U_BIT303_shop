@@ -40,6 +40,12 @@ var Main = gcmd.Command{
 					controller.Employee.Logout,
 					controller.Employee.Info,
 					controller.Employee.UpdatePassword,
+					controller.Employee.ManageCreate,
+					controller.Employee.ManageList,
+					controller.Employee.ManageDetail,
+					controller.Employee.ManageUpdate,
+					controller.Employee.ManageStatus,
+					controller.Employee.ManageResetPassword,
 				)
 			})
 		})

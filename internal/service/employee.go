@@ -16,6 +16,12 @@ type (
 		Login(ctx context.Context, in model.EmployeeLoginInput) (out model.EmployeeLoginOutput, err error)
 		Info(ctx context.Context, employeeId uint) (out model.EmployeeInfoOutput, err error)
 		UpdatePassword(ctx context.Context, in model.EmployeeUpdatePasswordInput) error
+		ManageCreate(ctx context.Context, in model.EmployeeManageCreateInput) (out model.EmployeeManageCreateOutput, err error)
+		ManageList(ctx context.Context, in model.EmployeeManageListInput) (out model.EmployeeManageListOutput, err error)
+		ManageDetail(ctx context.Context, id uint) (out model.EmployeeManageDetailOutput, err error)
+		ManageUpdate(ctx context.Context, in model.EmployeeManageUpdateInput) (out model.EmployeeManageUpdateOutput, err error)
+		ManageUpdateStatus(ctx context.Context, in model.EmployeeManageStatusInput) error
+		ManageResetPassword(ctx context.Context, in model.EmployeeManageResetPasswordInput) error
 	}
 )
 

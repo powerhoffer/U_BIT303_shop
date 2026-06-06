@@ -12,3 +12,10 @@ const (
 	CtxEmployeeId          = "employee_id"
 	CtxEmployeeUsername    = "employee_username"
 )
+
+const (
+	PointsAccountStatusDisabled = 0
+	PointsAccountStatusNormal   = 1
+	PointsChangeTypeAdd         = 1
+	PointsChangeTypeDeduct      = 2
+)

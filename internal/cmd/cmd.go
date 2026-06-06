@@ -49,6 +49,20 @@ var Main = gcmd.Command{
 				)
 			})
 		})
+		s.Group("/points", func(group *ghttp.RouterGroup) {
+			group.Middleware(
+				service.Middleware().CORS,
+				service.Middleware().ResponseHandler,
+				service.Middleware().EmployeeAuth,
+			)
+			group.Bind(
+				controller.Points.Balance,
+				controller.Points.Records,
+				controller.Points.ManageAdd,
+				controller.Points.ManageDeduct,
+				controller.Points.ManageRecords,
+			)
+		})
 		s.Run()
 		return nil
 	},

@@ -5,6 +5,8 @@ import (
 
 	"bit303_shop/internal/consts"
 	"bit303_shop/internal/controller"
+	"bit303_shop/internal/controller/backend"
+	"bit303_shop/internal/controller/frontend"
 	"bit303_shop/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -25,50 +27,44 @@ var Main = gcmd.Command{
 			)
 			group.Bind(controller.Health)
 		})
-		s.Group("/employee", func(group *ghttp.RouterGroup) {
+		s.Group("/backend", func(group *ghttp.RouterGroup) {
 			group.Middleware(
 				service.Middleware().CORS,
 				service.Middleware().ResponseHandler,
 			)
 			group.Bind(
-				controller.Employee.Register,
-				controller.Employee.Login,
+				backend.Employee.Register,
+				backend.Employee.Login,
 			)
 			group.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(service.Middleware().EmployeeAuth)
 				group.Bind(
-					controller.Employee.Logout,
-					controller.Employee.Info,
-					controller.Employee.UpdatePassword,
-					controller.Employee.ManageCreate,
-					controller.Employee.ManageList,
-					controller.Employee.ManageDetail,
-					controller.Employee.ManageUpdate,
-					controller.Employee.ManageStatus,
-					controller.Employee.ManageResetPassword,
+					backend.Employee.Logout,
+					backend.Employee.Info,
+					backend.Employee.UpdatePassword,
+					backend.Employee.ManageCreate,
+					backend.Employee.ManageList,
+					backend.Employee.ManageDetail,
+					backend.Employee.ManageUpdate,
+					backend.Employee.ManageStatus,
+					backend.Employee.ManageResetPassword,
+					backend.Points.Balance,
+					backend.Points.Records,
+					backend.Points.ManageAdd,
+					backend.Points.ManageDeduct,
+					backend.Points.ManageRecords,
+					backend.Category.List,
 				)
 			})
 		})
-		s.Group("/points", func(group *ghttp.RouterGroup) {
+		s.Group("/frontend", func(group *ghttp.RouterGroup) {
 			group.Middleware(
 				service.Middleware().CORS,
 				service.Middleware().ResponseHandler,
-				service.Middleware().EmployeeAuth,
 			)
 			group.Bind(
-				controller.Points.Balance,
-				controller.Points.Records,
-				controller.Points.ManageAdd,
-				controller.Points.ManageDeduct,
-				controller.Points.ManageRecords,
+				frontend.Category.List,
 			)
-		})
-		s.Group("/category", func(group *ghttp.RouterGroup) {
-			group.Middleware(
-				service.Middleware().CORS,
-				service.Middleware().ResponseHandler,
-			)
-			group.Bind(controller.Category.List)
 		})
 		s.Run()
 		return nil

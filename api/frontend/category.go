@@ -1,12 +1,12 @@
-package category
+package frontend
 
 import "github.com/gogf/gf/v2/frame/g"
 
-type ListReq struct {
-	g.Meta `path:"/list" method:"get" tags:"商品分类" summary:"商品分类列表"`
+type CategoryListReq struct {
+	g.Meta `path:"/category/list" method:"get" tags:"前台商品分类" summary:"前台商品分类列表"`
 }
 
-type ListRes struct {
+type CategoryListRes struct {
 	List  []CategoryItem `json:"list"`
 	Total int            `json:"total"`
 }

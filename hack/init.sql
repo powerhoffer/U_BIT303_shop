@@ -49,3 +49,27 @@ CREATE TABLE IF NOT EXISTS `employee_points_record` (
   KEY `idx_points_record_operator` (`operator_employee_id`),
   KEY `idx_points_record_change_type` (`change_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='员工积分流水表';
+
+CREATE TABLE IF NOT EXISTS `goods_category` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '商品分类ID',
+  `name` varchar(64) NOT NULL COMMENT '分类名称',
+  `sort` int unsigned NOT NULL DEFAULT 0 COMMENT '排序值',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT '状态：1启用 0停用',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_goods_category_name` (`name`),
+  KEY `idx_goods_category_status` (`status`),
+  KEY `idx_goods_category_sort` (`sort`),
+  KEY `idx_goods_category_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品分类表';
+
+INSERT INTO `goods_category` (`name`, `sort`, `status`) VALUES
+('办公零食', 1, 1),
+('福利商品', 2, 1),
+('办公用品', 3, 1)
+ON DUPLICATE KEY UPDATE
+  `sort` = VALUES(`sort`),
+  `status` = VALUES(`status`),
+  `deleted_at` = NULL;

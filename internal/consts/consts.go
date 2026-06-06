@@ -19,3 +19,8 @@ const (
 	PointsChangeTypeAdd         = 1
 	PointsChangeTypeDeduct      = 2
 )
+
+const (
+	GoodsCategoryStatusDisabled = 0
+	GoodsCategoryStatusEnabled  = 1
+)

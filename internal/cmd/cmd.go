@@ -63,6 +63,13 @@ var Main = gcmd.Command{
 				controller.Points.ManageRecords,
 			)
 		})
+		s.Group("/category", func(group *ghttp.RouterGroup) {
+			group.Middleware(
+				service.Middleware().CORS,
+				service.Middleware().ResponseHandler,
+			)
+			group.Bind(controller.Category.List)
+		})
 		s.Run()
 		return nil
 	},

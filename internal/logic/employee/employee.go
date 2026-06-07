@@ -2,6 +2,7 @@ package employee
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 
 	"bit303_shop/internal/consts"
@@ -71,6 +72,9 @@ func (s *sEmployee) Register(ctx context.Context, in model.EmployeeRegisterInput
 func (s *sEmployee) Login(ctx context.Context, in model.EmployeeLoginInput) (out model.EmployeeLoginOutput, err error) {
 	employee, err := s.getNormalEmployeeByUsername(ctx, in.Username)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return out, errors.New("账号或者密码不正确")
+		}
 		return out, err
 	}
 	if employee.Id == 0 {

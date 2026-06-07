@@ -65,6 +65,14 @@ CREATE TABLE IF NOT EXISTS `goods_category` (
   KEY `idx_goods_category_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品分类表';
 
+INSERT INTO `employee_info` (`username`, `password_hash`, `real_name`, `phone`, `email`, `status`) VALUES
+('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', CONVERT(UNHEX('E7B3BBE7BB9FE7AEA1E79086E59198') USING utf8mb4), '', '', 1)
+ON DUPLICATE KEY UPDATE
+  `password_hash` = VALUES(`password_hash`),
+  `real_name` = VALUES(`real_name`),
+  `status` = VALUES(`status`),
+  `deleted_at` = NULL;
+
 INSERT INTO `goods_category` (`name`, `sort`, `status`) VALUES
 ('办公零食', 1, 1),
 ('福利商品', 2, 1),

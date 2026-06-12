@@ -43,7 +43,7 @@ func (c *cEmployee) Login(ctx context.Context, req *backendApi.EmployeeLoginReq)
 }
 
 func (c *cEmployee) Logout(ctx context.Context, req *backendApi.EmployeeLogoutReq) (res *backendApi.EmployeeLogoutRes, err error) {
-	return &backendApi.EmployeeLogoutRes{Message: "登出成功"}, nil
+	return &backendApi.EmployeeLogoutRes{Message: "Logged out successfully"}, nil
 }
 
 func (c *cEmployee) Info(ctx context.Context, req *backendApi.EmployeeInfoReq) (res *backendApi.EmployeeInfoRes, err error) {
@@ -63,7 +63,7 @@ func (c *cEmployee) UpdatePassword(ctx context.Context, req *backendApi.Employee
 	if err != nil {
 		return nil, err
 	}
-	return &backendApi.EmployeeUpdatePasswordRes{Message: "修改密码成功"}, nil
+	return &backendApi.EmployeeUpdatePasswordRes{Message: "Password changed successfully"}, nil
 }
 
 func (c *cEmployee) ManageCreate(ctx context.Context, req *backendApi.EmployeeManageCreateReq) (res *backendApi.EmployeeManageCreateRes, err error) {
@@ -124,7 +124,7 @@ func (c *cEmployee) ManageStatus(ctx context.Context, req *backendApi.EmployeeMa
 	if err != nil {
 		return nil, err
 	}
-	return &backendApi.EmployeeManageStatusRes{Message: "状态更新成功"}, nil
+	return &backendApi.EmployeeManageStatusRes{Message: "Status updated successfully"}, nil
 }
 
 func (c *cEmployee) ManageResetPassword(ctx context.Context, req *backendApi.EmployeeManageResetPasswordReq) (res *backendApi.EmployeeManageResetPasswordRes, err error) {
@@ -135,7 +135,7 @@ func (c *cEmployee) ManageResetPassword(ctx context.Context, req *backendApi.Emp
 	if err != nil {
 		return nil, err
 	}
-	return &backendApi.EmployeeManageResetPasswordRes{Message: "密码重置成功"}, nil
+	return &backendApi.EmployeeManageResetPasswordRes{Message: "Password reset successfully"}, nil
 }
 
 func toApiEmployees(in []model.EmployeeBase) []backendApi.EmployeeBase {

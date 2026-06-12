@@ -33,7 +33,7 @@ router.beforeEach(async(to, from, next) => {
       next({ ...to, replace: true })
     } catch (error) {
       await store.dispatch('user/resetToken')
-      Message.error(error.message || '登录已失效')
+      Message.error(error.message || 'Login expired')
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }

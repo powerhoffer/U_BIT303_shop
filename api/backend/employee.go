@@ -7,12 +7,12 @@ import (
 )
 
 type EmployeeRegisterReq struct {
-	g.Meta   `path:"/employee/register" method:"post" tags:"后台员工" summary:"员工注册"`
-	Username string `json:"username" v:"required|length:3,64#账号不能为空|账号长度应为3到64位"`
-	Password string `json:"password" v:"required|length:6,64#密码不能为空|密码长度应为6到64位"`
-	RealName string `json:"real_name" v:"max-length:64#姓名最多64位"`
-	Phone    string `json:"phone" v:"max-length:20#手机号最多20位"`
-	Email    string `json:"email" v:"email|max-length:128#邮箱格式不正确|邮箱最多128位"`
+	g.Meta   `path:"/employee/register" method:"post" tags:"Backend Employees" summary:"Register employee"`
+	Username string `json:"username" v:"required|length:3,64#Username is required|Username must be 3 to 64 characters"`
+	Password string `json:"password" v:"required|length:6,64#Password is required|Password must be 6 to 64 characters"`
+	RealName string `json:"real_name" v:"max-length:64#Name must be at most 64 characters"`
+	Phone    string `json:"phone" v:"max-length:20#Phone must be at most 20 characters"`
+	Email    string `json:"email" v:"email|max-length:128#Invalid email format|Email must be at most 128 characters"`
 }
 
 type EmployeeRegisterRes struct {
@@ -20,9 +20,9 @@ type EmployeeRegisterRes struct {
 }
 
 type EmployeeLoginReq struct {
-	g.Meta   `path:"/employee/login" method:"post" tags:"后台员工" summary:"员工登录"`
-	Username string `json:"username" v:"required#账号不能为空"`
-	Password string `json:"password" v:"required#密码不能为空"`
+	g.Meta   `path:"/employee/login" method:"post" tags:"Backend Employees" summary:"Employee login"`
+	Username string `json:"username" v:"required#Username is required"`
+	Password string `json:"password" v:"required#Password is required"`
 	Remember bool   `json:"remember"`
 }
 
@@ -33,7 +33,7 @@ type EmployeeLoginRes struct {
 }
 
 type EmployeeLogoutReq struct {
-	g.Meta `path:"/employee/logout" method:"post" tags:"后台员工" summary:"员工登出"`
+	g.Meta `path:"/employee/logout" method:"post" tags:"Backend Employees" summary:"Employee logout"`
 }
 
 type EmployeeLogoutRes struct {
@@ -41,7 +41,7 @@ type EmployeeLogoutRes struct {
 }
 
 type EmployeeInfoReq struct {
-	g.Meta `path:"/employee/info" method:"get" tags:"后台员工" summary:"当前员工信息"`
+	g.Meta `path:"/employee/info" method:"get" tags:"Backend Employees" summary:"Current employee information"`
 }
 
 type EmployeeInfoRes struct {
@@ -49,9 +49,9 @@ type EmployeeInfoRes struct {
 }
 
 type EmployeeUpdatePasswordReq struct {
-	g.Meta      `path:"/employee/password" method:"post" tags:"后台员工" summary:"修改密码"`
-	OldPassword string `json:"old_password" v:"required#旧密码不能为空"`
-	NewPassword string `json:"new_password" v:"required|length:6,64#新密码不能为空|新密码长度应为6到64位"`
+	g.Meta      `path:"/employee/password" method:"post" tags:"Backend Employees" summary:"Change password"`
+	OldPassword string `json:"old_password" v:"required#Current password is required"`
+	NewPassword string `json:"new_password" v:"required|length:6,64#New password is required|New password must be 6 to 64 characters"`
 }
 
 type EmployeeUpdatePasswordRes struct {
@@ -59,12 +59,12 @@ type EmployeeUpdatePasswordRes struct {
 }
 
 type EmployeeManageCreateReq struct {
-	g.Meta   `path:"/employee/manage/create" method:"post" tags:"后台员工" summary:"新增员工"`
-	Username string `json:"username" v:"required|length:3,64#账号不能为空|账号长度应为3到64位"`
-	Password string `json:"password" v:"required|length:6,64#密码不能为空|密码长度应为6到64位"`
-	RealName string `json:"real_name" v:"max-length:64#姓名最多64位"`
-	Phone    string `json:"phone" v:"max-length:20#手机号最多20位"`
-	Email    string `json:"email" v:"email|max-length:128#邮箱格式不正确|邮箱最多128位"`
+	g.Meta   `path:"/employee/manage/create" method:"post" tags:"Backend Employees" summary:"Create employee"`
+	Username string `json:"username" v:"required|length:3,64#Username is required|Username must be 3 to 64 characters"`
+	Password string `json:"password" v:"required|length:6,64#Password is required|Password must be 6 to 64 characters"`
+	RealName string `json:"real_name" v:"max-length:64#Name must be at most 64 characters"`
+	Phone    string `json:"phone" v:"max-length:20#Phone must be at most 20 characters"`
+	Email    string `json:"email" v:"email|max-length:128#Invalid email format|Email must be at most 128 characters"`
 }
 
 type EmployeeManageCreateRes struct {
@@ -72,9 +72,9 @@ type EmployeeManageCreateRes struct {
 }
 
 type EmployeeManageListReq struct {
-	g.Meta   `path:"/employee/manage/list" method:"get" tags:"后台员工" summary:"员工列表"`
-	Page     int    `json:"page" in:"query" d:"1" v:"min:1#分页页码错误"`
-	Size     int    `json:"size" in:"query" d:"10" v:"max:50#分页数量最多50条"`
+	g.Meta   `path:"/employee/manage/list" method:"get" tags:"Backend Employees" summary:"Employee list"`
+	Page     int    `json:"page" in:"query" d:"1" v:"min:1#Invalid page number"`
+	Size     int    `json:"size" in:"query" d:"10" v:"max:50#Page size must be at most 50"`
 	Username string `json:"username" in:"query"`
 	RealName string `json:"real_name" in:"query"`
 	Status   int    `json:"status" in:"query" d:"-1"`
@@ -88,8 +88,8 @@ type EmployeeManageListRes struct {
 }
 
 type EmployeeManageDetailReq struct {
-	g.Meta `path:"/employee/manage/detail" method:"get" tags:"后台员工" summary:"员工详情"`
-	Id     uint `json:"id" in:"query" v:"required|min:1#员工ID不能为空|员工ID错误"`
+	g.Meta `path:"/employee/manage/detail" method:"get" tags:"Backend Employees" summary:"Employee details"`
+	Id     uint `json:"id" in:"query" v:"required|min:1#Employee ID is required|Invalid employee ID"`
 }
 
 type EmployeeManageDetailRes struct {
@@ -97,11 +97,11 @@ type EmployeeManageDetailRes struct {
 }
 
 type EmployeeManageUpdateReq struct {
-	g.Meta   `path:"/employee/manage/update" method:"post" tags:"后台员工" summary:"编辑员工信息"`
-	Id       uint   `json:"id" v:"required|min:1#员工ID不能为空|员工ID错误"`
-	RealName string `json:"real_name" v:"max-length:64#姓名最多64位"`
-	Phone    string `json:"phone" v:"max-length:20#手机号最多20位"`
-	Email    string `json:"email" v:"email|max-length:128#邮箱格式不正确|邮箱最多128位"`
+	g.Meta   `path:"/employee/manage/update" method:"post" tags:"Backend Employees" summary:"Update employee information"`
+	Id       uint   `json:"id" v:"required|min:1#Employee ID is required|Invalid employee ID"`
+	RealName string `json:"real_name" v:"max-length:64#Name must be at most 64 characters"`
+	Phone    string `json:"phone" v:"max-length:20#Phone must be at most 20 characters"`
+	Email    string `json:"email" v:"email|max-length:128#Invalid email format|Email must be at most 128 characters"`
 }
 
 type EmployeeManageUpdateRes struct {
@@ -109,9 +109,9 @@ type EmployeeManageUpdateRes struct {
 }
 
 type EmployeeManageStatusReq struct {
-	g.Meta `path:"/employee/manage/status" method:"post" tags:"后台员工" summary:"启用或禁用员工"`
-	Id     uint   `json:"id" v:"required|min:1#员工ID不能为空|员工ID错误"`
-	Status string `json:"status" v:"required|in:0,1#状态不能为空|状态只能是0或1"`
+	g.Meta `path:"/employee/manage/status" method:"post" tags:"Backend Employees" summary:"Enable or disable employee"`
+	Id     uint   `json:"id" v:"required|min:1#Employee ID is required|Invalid employee ID"`
+	Status string `json:"status" v:"required|in:0,1#Status is required|Status must be 0 or 1"`
 }
 
 type EmployeeManageStatusRes struct {
@@ -119,9 +119,9 @@ type EmployeeManageStatusRes struct {
 }
 
 type EmployeeManageResetPasswordReq struct {
-	g.Meta   `path:"/employee/manage/reset-password" method:"post" tags:"后台员工" summary:"重置员工密码"`
-	Id       uint   `json:"id" v:"required|min:1#员工ID不能为空|员工ID错误"`
-	Password string `json:"password" v:"required|length:6,64#密码不能为空|密码长度应为6到64位"`
+	g.Meta   `path:"/employee/manage/reset-password" method:"post" tags:"Backend Employees" summary:"Reset employee password"`
+	Id       uint   `json:"id" v:"required|min:1#Employee ID is required|Invalid employee ID"`
+	Password string `json:"password" v:"required|length:6,64#Password is required|Password must be 6 to 64 characters"`
 }
 
 type EmployeeManageResetPasswordRes struct {

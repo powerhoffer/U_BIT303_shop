@@ -1,19 +1,19 @@
 <template>
   <div class="page-container">
     <el-card shadow="never" class="password-card">
-      <div slot="header">修改密码</div>
+      <div slot="header">Change Password</div>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="旧密码" prop="old_password">
+        <el-form-item label="Current Password" prop="old_password">
           <el-input v-model="form.old_password" show-password />
         </el-form-item>
-        <el-form-item label="新密码" prop="new_password">
+        <el-form-item label="New Password" prop="new_password">
           <el-input v-model="form.new_password" show-password />
         </el-form-item>
-        <el-form-item label="确认密码" prop="confirm_password">
+        <el-form-item label="Confirm Password" prop="confirm_password">
           <el-input v-model="form.confirm_password" show-password />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="submit">保存</el-button>
+          <el-button type="primary" :loading="loading" @click="submit">Save</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -28,7 +28,7 @@ export default {
   data() {
     const validateConfirm = (rule, value, callback) => {
       if (value !== this.form.new_password) {
-        callback(new Error('两次输入的新密码不一致'))
+        callback(new Error('The two new passwords do not match'))
       } else {
         callback()
       }
@@ -41,8 +41,8 @@ export default {
         confirm_password: ''
       },
       rules: {
-        old_password: [{ required: true, message: '请输入旧密码', trigger: 'blur' }],
-        new_password: [{ required: true, min: 6, message: '新密码至少6位', trigger: 'blur' }],
+        old_password: [{ required: true, message: 'Please enter current password', trigger: 'blur' }],
+        new_password: [{ required: true, min: 6, message: 'New password must be at least 6 characters', trigger: 'blur' }],
         confirm_password: [{ required: true, validator: validateConfirm, trigger: 'blur' }]
       }
     }
@@ -57,7 +57,7 @@ export default {
             old_password: this.form.old_password,
             new_password: this.form.new_password
           })
-          this.$message.success('密码已修改，请重新登录')
+          this.$message.success('Password changed. Please log in again')
           await this.$store.dispatch('user/logout')
           this.$router.push('/login')
         } finally {

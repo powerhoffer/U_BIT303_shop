@@ -7,7 +7,7 @@ import (
 )
 
 type PointsBalanceReq struct {
-	g.Meta `path:"/points/balance" method:"get" tags:"后台积分" summary:"当前员工积分余额"`
+	g.Meta `path:"/points/balance" method:"get" tags:"Backend Credits" summary:"Current employee credit balance"`
 }
 
 type PointsBalanceRes struct {
@@ -15,9 +15,9 @@ type PointsBalanceRes struct {
 }
 
 type PointsRecordsReq struct {
-	g.Meta `path:"/points/records" method:"get" tags:"后台积分" summary:"当前员工积分流水"`
-	Page   int `json:"page" in:"query" d:"1" v:"min:1#分页页码错误"`
-	Size   int `json:"size" in:"query" d:"10" v:"max:50#分页数量最多50条"`
+	g.Meta `path:"/points/records" method:"get" tags:"Backend Credits" summary:"Current employee credit records"`
+	Page   int `json:"page" in:"query" d:"1" v:"min:1#Invalid page number"`
+	Size   int `json:"size" in:"query" d:"10" v:"max:50#Page size must be at most 50"`
 }
 
 type PointsRecordsRes struct {
@@ -28,10 +28,10 @@ type PointsRecordsRes struct {
 }
 
 type PointsManageAddReq struct {
-	g.Meta     `path:"/points/manage/add" method:"post" tags:"后台积分" summary:"管理员增加员工积分"`
-	EmployeeId uint   `json:"employee_id" v:"required|min:1#员工ID不能为空|员工ID错误"`
-	Points     uint   `json:"points" v:"required|min:1#积分不能为空|积分必须大于0"`
-	Remark     string `json:"remark" v:"max-length:255#备注最多255位"`
+	g.Meta     `path:"/points/manage/add" method:"post" tags:"Backend Credits" summary:"Add employee credits"`
+	EmployeeId uint   `json:"employee_id" v:"required|min:1#Employee ID is required|Invalid employee ID"`
+	Points     uint   `json:"points" v:"required|min:1#Credits are required|Credits must be greater than 0"`
+	Remark     string `json:"remark" v:"max-length:255#Remark must be at most 255 characters"`
 }
 
 type PointsManageAddRes struct {
@@ -39,10 +39,10 @@ type PointsManageAddRes struct {
 }
 
 type PointsManageDeductReq struct {
-	g.Meta     `path:"/points/manage/deduct" method:"post" tags:"后台积分" summary:"管理员扣除员工积分"`
-	EmployeeId uint   `json:"employee_id" v:"required|min:1#员工ID不能为空|员工ID错误"`
-	Points     uint   `json:"points" v:"required|min:1#积分不能为空|积分必须大于0"`
-	Remark     string `json:"remark" v:"max-length:255#备注最多255位"`
+	g.Meta     `path:"/points/manage/deduct" method:"post" tags:"Backend Credits" summary:"Deduct employee credits"`
+	EmployeeId uint   `json:"employee_id" v:"required|min:1#Employee ID is required|Invalid employee ID"`
+	Points     uint   `json:"points" v:"required|min:1#Credits are required|Credits must be greater than 0"`
+	Remark     string `json:"remark" v:"max-length:255#Remark must be at most 255 characters"`
 }
 
 type PointsManageDeductRes struct {
@@ -50,10 +50,10 @@ type PointsManageDeductRes struct {
 }
 
 type PointsManageRecordsReq struct {
-	g.Meta     `path:"/points/manage/records" method:"get" tags:"后台积分" summary:"管理员查看员工积分流水"`
-	EmployeeId uint `json:"employee_id" in:"query" v:"required|min:1#员工ID不能为空|员工ID错误"`
-	Page       int  `json:"page" in:"query" d:"1" v:"min:1#分页页码错误"`
-	Size       int  `json:"size" in:"query" d:"10" v:"max:50#分页数量最多50条"`
+	g.Meta     `path:"/points/manage/records" method:"get" tags:"Backend Credits" summary:"Employee credit records"`
+	EmployeeId uint `json:"employee_id" in:"query" v:"required|min:1#Employee ID is required|Invalid employee ID"`
+	Page       int  `json:"page" in:"query" d:"1" v:"min:1#Invalid page number"`
+	Size       int  `json:"size" in:"query" d:"10" v:"max:50#Page size must be at most 50"`
 }
 
 type PointsManageRecordsRes struct {

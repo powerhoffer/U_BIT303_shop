@@ -2,50 +2,50 @@
   <div class="page-container">
     <el-card shadow="never" class="filter-card">
       <el-form :inline="true" :model="queryForm" size="mini">
-        <el-form-item label="账号">
-          <el-input v-model.trim="queryForm.username" clearable placeholder="员工账号" />
+        <el-form-item label="Username">
+          <el-input v-model.trim="queryForm.username" clearable placeholder="Employee username" />
         </el-form-item>
-        <el-form-item label="姓名">
-          <el-input v-model.trim="queryForm.real_name" clearable placeholder="员工姓名" />
+        <el-form-item label="Name">
+          <el-input v-model.trim="queryForm.real_name" clearable placeholder="Employee name" />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" clearable placeholder="全部" style="width: 120px">
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
+        <el-form-item label="Status">
+          <el-select v-model="queryForm.status" clearable placeholder="All" style="width: 120px">
+            <el-option label="Active" :value="1" />
+            <el-option label="Disabled" :value="0" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset">重置</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+          <el-button icon="el-icon-refresh-left" @click="handleReset">Reset</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
     <el-card shadow="never">
       <div slot="header" class="card-header">
-        <span>员工列表</span>
-        <el-button type="primary" size="mini" icon="el-icon-plus" @click="openCreate">新增员工</el-button>
+        <span>Employees</span>
+        <el-button type="primary" size="mini" icon="el-icon-plus" @click="openCreate">New Employee</el-button>
       </div>
       <el-table v-loading="loading" :data="list" border style="width: 100%">
         <el-table-column align="center" prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="账号" min-width="150" />
-        <el-table-column prop="real_name" label="姓名" min-width="140" />
-        <el-table-column prop="phone" label="手机号" min-width="150" />
-        <el-table-column prop="email" label="邮箱" min-width="190" />
-        <el-table-column align="center" label="状态" width="100">
+        <el-table-column prop="username" label="Username" min-width="150" />
+        <el-table-column prop="real_name" label="Name" min-width="140" />
+        <el-table-column prop="phone" label="Phone" min-width="150" />
+        <el-table-column prop="email" label="Email" min-width="190" />
+        <el-table-column align="center" label="Status" width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
+              {{ scope.row.status === 1 ? 'Active' : 'Disabled' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作" width="260" fixed="right">
+        <el-table-column align="center" label="Actions" width="280" fixed="right">
           <template slot-scope="scope">
-            <el-button size="mini" icon="el-icon-edit" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button size="mini" icon="el-icon-edit" @click="openEdit(scope.row)">Edit</el-button>
             <el-button size="mini" :type="scope.row.status === 1 ? 'warning' : 'success'" @click="toggleStatus(scope.row)">
-              {{ scope.row.status === 1 ? '禁用' : '启用' }}
+              {{ scope.row.status === 1 ? 'Disable' : 'Enable' }}
             </el-button>
-            <el-button size="mini" type="danger" @click="openReset(scope.row)">重置密码</el-button>
+            <el-button size="mini" type="danger" @click="openReset(scope.row)">Reset Password</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,39 +61,39 @@
       />
     </el-card>
 
-    <el-dialog :title="isEdit ? '编辑员工' : '新增员工'" :visible.sync="dialogVisible" width="520px">
+    <el-dialog :title="isEdit ? 'Edit Employee' : 'New Employee'" :visible.sync="dialogVisible" width="520px">
       <el-form ref="employeeForm" :model="form" :rules="rules" label-width="90px">
-        <el-form-item label="账号" prop="username">
+        <el-form-item label="Username" prop="username">
           <el-input v-model.trim="form.username" :disabled="isEdit" />
         </el-form-item>
-        <el-form-item v-if="!isEdit" label="密码" prop="password">
+        <el-form-item v-if="!isEdit" label="Password" prop="password">
           <el-input v-model="form.password" show-password />
         </el-form-item>
-        <el-form-item label="姓名" prop="real_name">
+        <el-form-item label="Name" prop="real_name">
           <el-input v-model.trim="form.real_name" />
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
+        <el-form-item label="Phone" prop="phone">
           <el-input v-model.trim="form.phone" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item label="Email" prop="email">
           <el-input v-model.trim="form.email" />
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="submitEmployee">确定</el-button>
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="submitEmployee">Confirm</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog title="重置密码" :visible.sync="resetVisible" width="420px">
+    <el-dialog title="Reset Password" :visible.sync="resetVisible" width="420px">
       <el-form ref="resetForm" :model="resetForm" :rules="resetRules" label-width="90px">
-        <el-form-item label="新密码" prop="password">
+        <el-form-item label="New Password" prop="password">
           <el-input v-model="resetForm.password" show-password />
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="resetVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="submitReset">确定</el-button>
+        <el-button @click="resetVisible = false">Cancel</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="submitReset">Confirm</el-button>
       </div>
     </el-dialog>
   </div>
@@ -141,11 +141,11 @@ export default {
         password: ''
       },
       rules: {
-        username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-        password: [{ required: true, min: 6, message: '密码至少6位', trigger: 'blur' }]
+        username: [{ required: true, message: 'Please enter a username', trigger: 'blur' }],
+        password: [{ required: true, min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }]
       },
       resetRules: {
-        password: [{ required: true, min: 6, message: '密码至少6位', trigger: 'blur' }]
+        password: [{ required: true, min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }]
       }
     }
   },
@@ -211,7 +211,7 @@ export default {
           } else {
             await employeeCreate(this.form)
           }
-          this.$message.success('保存成功')
+          this.$message.success('Saved successfully')
           this.dialogVisible = false
           this.getList()
         } finally {
@@ -221,11 +221,11 @@ export default {
     },
     toggleStatus(row) {
       const nextStatus = row.status === 1 ? 0 : 1
-      this.$confirm(`确认${nextStatus === 1 ? '启用' : '禁用'}员工 ${row.username}？`, '提示', {
+      this.$confirm(`Confirm ${nextStatus === 1 ? 'enabling' : 'disabling'} employee ${row.username}?`, 'Warning', {
         type: 'warning'
       }).then(async() => {
         await employeeStatus({ id: row.id, status: String(nextStatus) })
-        this.$message.success('状态已更新')
+        this.$message.success('Status updated successfully')
         this.getList()
       }).catch(() => {})
     },
@@ -240,7 +240,7 @@ export default {
         this.submitLoading = true
         try {
           await employeeResetPassword(this.resetForm)
-          this.$message.success('密码已重置')
+          this.$message.success('Password reset successfully')
           this.resetVisible = false
         } finally {
           this.submitLoading = false

@@ -54,7 +54,7 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 func (s *sMiddleware) EmployeeAuth(r *ghttp.Request) {
 	token := strings.TrimSpace(r.Header.Get("Authorization"))
 	if token == "" {
-		response.JsonExit(r, 401, "未登录或登录已过期")
+		response.JsonExit(r, 401, "Unauthorized or session expired")
 		return
 	}
 	if strings.HasPrefix(token, "Bearer ") {
@@ -62,7 +62,7 @@ func (s *sMiddleware) EmployeeAuth(r *ghttp.Request) {
 	}
 	claims, err := utility.ParseEmployeeToken(token)
 	if err != nil || claims.EmployeeId == 0 {
-		response.JsonExit(r, 401, "未登录或登录已过期")
+		response.JsonExit(r, 401, "Unauthorized or session expired")
 		return
 	}
 
@@ -73,15 +73,15 @@ func (s *sMiddleware) EmployeeAuth(r *ghttp.Request) {
 		WhereNull(columns.DeletedAt).
 		Scan(&employee)
 	if err != nil {
-		response.JsonExit(r, 500, "员工信息查询失败")
+		response.JsonExit(r, 500, "Failed to query employee information")
 		return
 	}
 	if employee.Id == 0 {
-		response.JsonExit(r, 401, "员工账号不存在")
+		response.JsonExit(r, 401, "Employee account does not exist")
 		return
 	}
 	if employee.Status != consts.EmployeeStatusNormal {
-		response.JsonExit(r, 403, "员工账号已禁用")
+		response.JsonExit(r, 403, "Employee account is disabled")
 		return
 	}
 

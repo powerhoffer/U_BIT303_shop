@@ -16,9 +16,9 @@
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/password">
-            <el-dropdown-item>修改密码</el-dropdown-item>
+            <el-dropdown-item>Change Password</el-dropdown-item>
           </router-link>
-          <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+          <el-dropdown-item divided @click.native="logout">Log Out</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>

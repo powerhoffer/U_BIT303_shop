@@ -1,6 +1,6 @@
 import defaultSettings from '@/settings'
 
-const title = defaultSettings.title || 'BIT303 商城管理系统'
+const title = defaultSettings.title || 'BIT303 Shop Admin'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

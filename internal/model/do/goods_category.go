@@ -12,11 +12,11 @@ import (
 // GoodsCategory is the golang structure of table goods_category for DAO operations like Where/Data.
 type GoodsCategory struct {
 	g.Meta    `orm:"table:goods_category, do:true"`
-	Id        any         // 商品分类ID
-	Name      any         // 分类名称
-	Sort      any         // 排序值
-	Status    any         // 状态：1启用 0停用
-	CreatedAt *gtime.Time // 创建时间
-	UpdatedAt *gtime.Time // 更新时间
-	DeletedAt *gtime.Time // 删除时间
+	Id        any         // Goods category ID
+	Name      any         // Category name
+	Sort      any         // Sort order
+	Status    any         // Status: 1 enabled, 0 disabled
+	CreatedAt *gtime.Time // Created time
+	UpdatedAt *gtime.Time // Updated time
+	DeletedAt *gtime.Time // Deleted time
 }

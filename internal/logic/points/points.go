@@ -59,7 +59,7 @@ func (s *sPoints) ManageDeduct(ctx context.Context, in model.PointsChangeInput) 
 
 func (s *sPoints) changePoints(ctx context.Context, in model.PointsChangeInput, changeType int) (out model.PointsChangeOutput, err error) {
 	if in.Points == 0 {
-		return out, errors.New("积分必须大于0")
+		return out, errors.New("Credits must be greater than 0")
 	}
 	if err = s.checkEmployee(ctx, in.EmployeeId); err != nil {
 		return out, err
@@ -72,7 +72,7 @@ func (s *sPoints) changePoints(ctx context.Context, in model.PointsChangeInput, 
 		}
 		if account.Id == 0 {
 			if changeType == consts.PointsChangeTypeDeduct {
-				return errors.New("积分余额不足")
+				return errors.New("Insufficient credit balance")
 			}
 			if _, err = dao.EmployeePointsAccount.Ctx(ctx).Data(do.EmployeePointsAccount{
 				EmployeeId: in.EmployeeId,
@@ -87,7 +87,7 @@ func (s *sPoints) changePoints(ctx context.Context, in model.PointsChangeInput, 
 			}
 		}
 		if account.Status != consts.PointsAccountStatusNormal {
-			return errors.New("积分账户已停用")
+			return errors.New("Credit account is disabled")
 		}
 
 		beforeBalance := account.Balance
@@ -97,11 +97,11 @@ func (s *sPoints) changePoints(ctx context.Context, in model.PointsChangeInput, 
 			afterBalance = beforeBalance + in.Points
 		case consts.PointsChangeTypeDeduct:
 			if beforeBalance < in.Points {
-				return errors.New("积分余额不足")
+				return errors.New("Insufficient credit balance")
 			}
 			afterBalance = beforeBalance - in.Points
 		default:
-			return errors.New("积分变动类型错误")
+			return errors.New("Invalid credit change type")
 		}
 
 		if _, err = dao.EmployeePointsAccount.Ctx(ctx).
@@ -175,7 +175,7 @@ func (s *sPoints) checkEmployee(ctx context.Context, employeeId uint) error {
 		return err
 	}
 	if count == 0 {
-		return errors.New("员工账号不存在或已禁用")
+		return errors.New("Employee account does not exist or is disabled")
 	}
 	return nil
 }

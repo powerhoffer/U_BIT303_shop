@@ -2,22 +2,22 @@
   <div class="page-container">
     <el-card shadow="never">
       <div slot="header" class="card-header">
-        <span>商品分类</span>
-        <el-button size="mini" icon="el-icon-refresh" @click="getList">刷新</el-button>
+        <span>Categories</span>
+        <el-button size="mini" icon="el-icon-refresh" @click="getList">Refresh</el-button>
       </div>
       <el-table v-loading="loading" :data="list" border style="width: 100%">
         <el-table-column align="center" prop="id" label="ID" width="100" />
-        <el-table-column prop="name" label="分类名称" min-width="180" />
-        <el-table-column align="center" prop="sort" label="排序" width="120" />
-        <el-table-column align="center" label="状态" width="120">
+        <el-table-column prop="name" label="Category Name" min-width="180" />
+        <el-table-column align="center" prop="sort" label="Sort" width="120" />
+        <el-table-column align="center" label="Status" width="120">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? '启用' : '停用' }}
+              {{ scope.row.status === 1 ? 'Enabled' : 'Disabled' }}
             </el-tag>
           </template>
         </el-table-column>
       </el-table>
-      <div class="table-footer">共 {{ total }} 个分类</div>
+      <div class="table-footer">{{ total }} categories</div>
     </el-card>
   </div>
 </template>

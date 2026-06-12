@@ -2,7 +2,7 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on">
       <div class="title-container">
-        <h3 class="title">BIT303 商城管理系统</h3>
+        <h3 class="title">BIT303 Shop Admin</h3>
       </div>
 
       <el-form-item prop="username">
@@ -12,7 +12,7 @@
         <el-input
           ref="username"
           v-model.trim="loginForm.username"
-          placeholder="员工账号"
+          placeholder="Employee username"
           name="username"
           type="text"
           autocomplete="on"
@@ -28,7 +28,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="密码"
+          placeholder="Password"
           name="password"
           autocomplete="on"
           show-password
@@ -36,10 +36,10 @@
         />
       </el-form-item>
 
-      <el-checkbox v-model="loginForm.remember" class="remember">记住登录</el-checkbox>
+      <el-checkbox v-model="loginForm.remember" class="remember">Remember me</el-checkbox>
 
       <el-button :loading="loading" type="primary" class="login-button" @click="handleLogin">
-        登录
+        Login
       </el-button>
     </el-form>
   </div>
@@ -56,8 +56,8 @@ export default {
         remember: false
       },
       loginRules: {
-        username: [{ required: true, message: '请输入员工账号', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        username: [{ required: true, message: 'Please enter employee username', trigger: 'blur' }],
+        password: [{ required: true, message: 'Please enter password', trigger: 'blur' }]
       },
       passwordType: 'password',
       loading: false,
@@ -84,7 +84,7 @@ export default {
         this.loading = true
         this.$store.dispatch('user/login', this.loginForm)
           .then(() => {
-            this.$message.success('登录成功')
+            this.$message.success('Login successful')
             this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
           })
           .finally(() => {

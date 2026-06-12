@@ -45,7 +45,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][value] }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -68,14 +68,14 @@ export function formatTime(time, option) {
   const diff = (now - d) / 1000
 
   if (diff < 30) {
-    return '刚刚'
+    return 'just now'
   } else if (diff < 3600) {
     // less 1 hour
-    return Math.ceil(diff / 60) + '分钟前'
+    return Math.ceil(diff / 60) + ' minutes ago'
   } else if (diff < 3600 * 24) {
-    return Math.ceil(diff / 3600) + '小时前'
+    return Math.ceil(diff / 3600) + ' hours ago'
   } else if (diff < 3600 * 24 * 2) {
-    return '1天前'
+    return '1 day ago'
   }
   if (option) {
     return parseTime(time, option)
@@ -83,13 +83,13 @@ export function formatTime(time, option) {
     return (
       d.getMonth() +
       1 +
-      '月' +
+      '/' +
       d.getDate() +
-      '日' +
+      ' ' +
       d.getHours() +
-      '时' +
+      ':' +
       d.getMinutes() +
-      '分'
+      ''
     )
   }
 }
@@ -255,15 +255,15 @@ export function debounce(func, wait, immediate) {
   let timeout, args, context, timestamp, result
 
   const later = function() {
-    // 据上一次触发时间间隔
+    // Time elapsed since the last trigger
     const last = +new Date() - timestamp
 
-    // 上次被包装函数被调用时间间隔 last 小于设定时间间隔 wait
+    // Reschedule if the elapsed time is less than the wait interval
     if (last < wait && last > 0) {
       timeout = setTimeout(later, wait - last)
     } else {
       timeout = null
-      // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
+      // Skip trailing call when immediate already handled the leading edge
       if (!immediate) {
         result = func.apply(context, args)
         if (!timeout) context = args = null
@@ -275,7 +275,7 @@ export function debounce(func, wait, immediate) {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
-    // 如果延时不存在，重新设定延时
+    // Reset the timer if it does not exist
     if (!timeout) timeout = setTimeout(later, wait)
     if (callNow) {
       result = func.apply(context, args)

@@ -41,7 +41,7 @@ const actions = {
       const token = response.data.token
       const employee = response.data.employee || {}
       commit('SET_TOKEN', token)
-      commit('SET_NAME', employee.real_name || employee.username || '员工')
+      commit('SET_NAME', employee.real_name || employee.username || 'Employee')
       commit('SET_AVATAR', defaultAvatar)
       setToken(token)
       localStorage.setItem('employee', JSON.stringify(employee))
@@ -52,7 +52,7 @@ const actions = {
   getInfo({ commit }) {
     return getInfo().then(response => {
       const employee = response.data.employee || {}
-      const name = employee.real_name || employee.username || '员工'
+      const name = employee.real_name || employee.username || 'Employee'
       const roles = ['*']
       commit('SET_NAME', name)
       commit('SET_AVATAR', defaultAvatar)

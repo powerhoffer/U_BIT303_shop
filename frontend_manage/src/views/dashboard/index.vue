@@ -3,35 +3,35 @@
     <el-row :gutter="16">
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-title">当前员工</div>
+          <div class="stat-title">Current Employee</div>
           <div class="stat-value">{{ employeeName }}</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-title">我的积分</div>
+          <div class="stat-title">My Credits</div>
           <div class="stat-value">{{ balance }}</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-title">管理模块</div>
+          <div class="stat-title">Management Modules</div>
           <div class="stat-value">3</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-title">后端服务</div>
-          <div class="stat-value">在线</div>
+          <div class="stat-title">Backend Service</div>
+          <div class="stat-value">Online</div>
         </el-card>
       </el-col>
     </el-row>
 
     <el-card shadow="never" class="quick-card">
-      <div slot="header">快捷入口</div>
-      <el-button type="primary" icon="el-icon-user" @click="$router.push('/employee/list')">员工管理</el-button>
-      <el-button type="success" icon="el-icon-coin" @click="$router.push('/points/manage')">积分操作</el-button>
-      <el-button type="warning" icon="el-icon-menu" @click="$router.push('/category/list')">商品分类</el-button>
+      <div slot="header">Quick Links</div>
+      <el-button type="primary" icon="el-icon-user" @click="$router.push('/employee/list')">Employees</el-button>
+      <el-button type="success" icon="el-icon-coin" @click="$router.push('/points/manage')">Credit Operations</el-button>
+      <el-button type="warning" icon="el-icon-menu" @click="$router.push('/category/list')">Categories</el-button>
     </el-card>
   </div>
 </template>
@@ -50,7 +50,7 @@ export default {
   computed: {
     ...mapGetters(['name']),
     employeeName() {
-      return this.name || '员工'
+      return this.name || 'Employee'
     }
   },
   created() {

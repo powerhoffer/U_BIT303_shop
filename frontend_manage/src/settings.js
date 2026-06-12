@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'BIT303 商城管理系统',
+  title: 'BIT303 Shop Admin',
   showSettings: false,
   tagsView: true,
   fixedHeader: false,

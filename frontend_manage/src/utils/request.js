@@ -31,7 +31,7 @@ service.interceptors.response.use(
         }
       }
       Message({
-        message: res.message || '请求失败',
+        message: res.message || 'Request failed',
         type: 'error',
         duration: 3000
       })
@@ -41,7 +41,7 @@ service.interceptors.response.use(
   },
   error => {
     Message({
-      message: error.message || '网络异常',
+      message: error.message || 'Network error',
       type: 'error',
       duration: 3000
     })

@@ -39,7 +39,7 @@ export const asyncRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '工作台', icon: 'dashboard', affix: true }
+        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -47,13 +47,13 @@ export const asyncRoutes = [
     path: '/employee',
     component: Layout,
     redirect: '/employee/list',
-    meta: { title: '员工管理', icon: 'people' },
+    meta: { title: 'Employees', icon: 'people' },
     children: [
       {
         path: 'list',
         component: () => import('@/views/employee/index'),
         name: 'EmployeeList',
-        meta: { title: '员工列表', icon: 'people' }
+        meta: { title: 'Employee List', icon: 'people' }
       }
     ]
   },
@@ -61,19 +61,19 @@ export const asyncRoutes = [
     path: '/points',
     component: Layout,
     redirect: '/points/my',
-    meta: { title: '积分管理', icon: 'money' },
+    meta: { title: 'Credits', icon: 'money' },
     children: [
       {
         path: 'my',
         component: () => import('@/views/points/MyPoints'),
         name: 'MyPoints',
-        meta: { title: '我的积分', icon: 'money' }
+        meta: { title: 'My Credits', icon: 'money' }
       },
       {
         path: 'manage',
         component: () => import('@/views/points/ManagePoints'),
         name: 'ManagePoints',
-        meta: { title: '积分操作', icon: 'edit' }
+        meta: { title: 'Credit Operations', icon: 'edit' }
       }
     ]
   },
@@ -81,13 +81,13 @@ export const asyncRoutes = [
     path: '/category',
     component: Layout,
     redirect: '/category/list',
-    meta: { title: '商品分类', icon: 'tree-table' },
+    meta: { title: 'Categories', icon: 'tree-table' },
     children: [
       {
         path: 'list',
         component: () => import('@/views/category/index'),
         name: 'CategoryList',
-        meta: { title: '分类列表', icon: 'tree-table' }
+        meta: { title: 'Category List', icon: 'tree-table' }
       }
     ]
   },
@@ -101,7 +101,7 @@ export const asyncRoutes = [
         path: 'password',
         component: () => import('@/views/profile/password'),
         name: 'ProfilePassword',
-        meta: { title: '修改密码', icon: 'password' }
+        meta: { title: 'Change Password', icon: 'password' }
       }
     ]
   },

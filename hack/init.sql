@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `goods_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品信息表';
 
 INSERT INTO `employee_info` (`username`, `password_hash`, `real_name`, `phone`, `email`, `status`) VALUES
-('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', CONVERT(UNHEX('E7B3BBE7BB9FE7AEA1E79086E59198') USING utf8mb4), '', '', 1)
+('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', 'System Administrator', '', '', 1)
 ON DUPLICATE KEY UPDATE
   `password_hash` = VALUES(`password_hash`),
   `real_name` = VALUES(`real_name`),
@@ -93,10 +93,31 @@ ON DUPLICATE KEY UPDATE
   `deleted_at` = NULL;
 
 INSERT INTO `goods_category` (`name`, `sort`, `status`) VALUES
-('办公零食', 1, 1),
-('福利商品', 2, 1),
-('办公用品', 3, 1)
+('Office Snacks', 1, 1),
+('Employee Benefits', 2, 1),
+('Office Supplies', 3, 1)
 ON DUPLICATE KEY UPDATE
   `sort` = VALUES(`sort`),
   `status` = VALUES(`status`),
   `deleted_at` = NULL;
+
+UPDATE `goods_info` g
+JOIN `goods_category` old_c ON old_c.`id` = g.`category_id` AND old_c.`name` = '办公零食'
+JOIN `goods_category` new_c ON new_c.`name` = 'Office Snacks'
+SET g.`category_id` = new_c.`id`;
+
+UPDATE `goods_info` g
+JOIN `goods_category` old_c ON old_c.`id` = g.`category_id` AND old_c.`name` = '福利商品'
+JOIN `goods_category` new_c ON new_c.`name` = 'Employee Benefits'
+SET g.`category_id` = new_c.`id`;
+
+UPDATE `goods_info` g
+JOIN `goods_category` old_c ON old_c.`id` = g.`category_id` AND old_c.`name` = '办公用品'
+JOIN `goods_category` new_c ON new_c.`name` = 'Office Supplies'
+SET g.`category_id` = new_c.`id`;
+
+DELETE FROM `goods_category`
+WHERE `name` IN ('办公零食', '福利商品', '办公用品');
+
+UPDATE `employee_info` SET `real_name` = 'Test Employee' WHERE `real_name` = '测试员工';
+UPDATE `employee_info` SET `real_name` = 'Goods Manager' WHERE `real_name` = '商品管理员';

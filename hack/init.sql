@@ -65,6 +65,25 @@ CREATE TABLE IF NOT EXISTS `goods_category` (
   KEY `idx_goods_category_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品分类表';
 
+CREATE TABLE IF NOT EXISTS `goods_info` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '商品ID',
+  `category_id` int unsigned NOT NULL COMMENT '商品分类ID',
+  `name` varchar(128) NOT NULL COMMENT '商品名称',
+  `image_url` varchar(255) NOT NULL DEFAULT '' COMMENT '商品图片',
+  `points_price` int unsigned NOT NULL COMMENT '兑换所需积分',
+  `stock` int unsigned NOT NULL DEFAULT 0 COMMENT '库存',
+  `description` text COMMENT '商品简介',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT '状态：1上架 0下架',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_goods_category_id` (`category_id`),
+  KEY `idx_goods_status` (`status`),
+  KEY `idx_goods_name` (`name`),
+  KEY `idx_goods_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品信息表';
+
 INSERT INTO `employee_info` (`username`, `password_hash`, `real_name`, `phone`, `email`, `status`) VALUES
 ('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', CONVERT(UNHEX('E7B3BBE7BB9FE7AEA1E79086E59198') USING utf8mb4), '', '', 1)
 ON DUPLICATE KEY UPDATE

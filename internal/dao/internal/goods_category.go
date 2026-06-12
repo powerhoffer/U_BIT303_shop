@@ -21,13 +21,13 @@ type GoodsCategoryDao struct {
 
 // GoodsCategoryColumns defines and stores column names for the table goods_category.
 type GoodsCategoryColumns struct {
-	Id        string // 商品分类ID
-	Name      string // 分类名称
-	Sort      string // 排序值
-	Status    string // 状态：1启用 0停用
-	CreatedAt string // 创建时间
-	UpdatedAt string // 更新时间
-	DeletedAt string // 删除时间
+	Id        string // Goods category ID
+	Name      string // Category name
+	Sort      string // Sort order
+	Status    string // Status: 1 enabled, 0 disabled
+	CreatedAt string // Created time
+	UpdatedAt string // Updated time
+	DeletedAt string // Deleted time
 }
 
 // goodsCategoryColumns holds the columns for the table goods_category.

@@ -24,3 +24,8 @@ const (
 	GoodsCategoryStatusDisabled = 0
 	GoodsCategoryStatusEnabled  = 1
 )
+
+const (
+	GoodsStatusOffShelf = 0
+	GoodsStatusOnShelf  = 1
+)

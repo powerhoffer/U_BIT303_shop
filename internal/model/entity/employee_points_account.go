@@ -10,11 +10,11 @@ import (
 
 // EmployeePointsAccount is the golang structure for table employee_points_account.
 type EmployeePointsAccount struct {
-	Id         uint        `json:"id"         orm:"id"          ` // 积分账户ID
-	EmployeeId uint        `json:"employeeId" orm:"employee_id" ` // 员工ID
-	Balance    uint        `json:"balance"    orm:"balance"     ` // 当前可用积分
-	Status     int         `json:"status"     orm:"status"      ` // 状态：1正常 0停用
-	CreatedAt  *gtime.Time `json:"createdAt"  orm:"created_at"  ` // 创建时间
-	UpdatedAt  *gtime.Time `json:"updatedAt"  orm:"updated_at"  ` // 更新时间
-	DeletedAt  *gtime.Time `json:"deletedAt"  orm:"deleted_at"  ` // 删除时间
+	Id         uint        `json:"id"         orm:"id"          ` // Credit account ID
+	EmployeeId uint        `json:"employeeId" orm:"employee_id" ` // Employee ID
+	Balance    uint        `json:"balance"    orm:"balance"     ` // Available credit balance
+	Status     int         `json:"status"     orm:"status"      ` // Status: 1 active, 0 disabled
+	CreatedAt  *gtime.Time `json:"createdAt"  orm:"created_at"  ` // Created time
+	UpdatedAt  *gtime.Time `json:"updatedAt"  orm:"updated_at"  ` // Updated time
+	DeletedAt  *gtime.Time `json:"deletedAt"  orm:"deleted_at"  ` // Deleted time
 }

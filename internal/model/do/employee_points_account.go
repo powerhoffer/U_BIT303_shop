@@ -12,11 +12,11 @@ import (
 // EmployeePointsAccount is the golang structure of table employee_points_account for DAO operations like Where/Data.
 type EmployeePointsAccount struct {
 	g.Meta     `orm:"table:employee_points_account, do:true"`
-	Id         any         // 积分账户ID
-	EmployeeId any         // 员工ID
-	Balance    any         // 当前可用积分
-	Status     any         // 状态：1正常 0停用
-	CreatedAt  *gtime.Time // 创建时间
-	UpdatedAt  *gtime.Time // 更新时间
-	DeletedAt  *gtime.Time // 删除时间
+	Id         any         // Credit account ID
+	EmployeeId any         // Employee ID
+	Balance    any         // Available credit balance
+	Status     any         // Status: 1 active, 0 disabled
+	CreatedAt  *gtime.Time // Created time
+	UpdatedAt  *gtime.Time // Updated time
+	DeletedAt  *gtime.Time // Deleted time
 }

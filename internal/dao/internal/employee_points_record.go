@@ -21,15 +21,15 @@ type EmployeePointsRecordDao struct {
 
 // EmployeePointsRecordColumns defines and stores column names for the table employee_points_record.
 type EmployeePointsRecordColumns struct {
-	Id                 string // 积分流水ID
-	EmployeeId         string // 员工ID
-	ChangeType         string // 变动类型：1增加 2扣除
-	Points             string // 变动积分
-	BeforeBalance      string // 变动前积分
-	AfterBalance       string // 变动后积分
-	OperatorEmployeeId string // 操作员工ID
-	Remark             string // 备注
-	CreatedAt          string // 创建时间
+	Id                 string // Credit record ID
+	EmployeeId         string // Employee ID
+	ChangeType         string // Change type: 1 add, 2 deduct
+	Points             string // Changed credits
+	BeforeBalance      string // Balance before change
+	AfterBalance       string // Balance after change
+	OperatorEmployeeId string // Operator employee ID
+	Remark             string // Remark
+	CreatedAt          string // Created time
 }
 
 // employeePointsRecordColumns holds the columns for the table employee_points_record.

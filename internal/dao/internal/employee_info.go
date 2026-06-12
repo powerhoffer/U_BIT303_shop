@@ -21,17 +21,17 @@ type EmployeeInfoDao struct {
 
 // EmployeeInfoColumns defines and stores column names for the table employee_info.
 type EmployeeInfoColumns struct {
-	Id           string // 员工ID
-	Username     string // 登录账号
-	PasswordHash string // bcrypt密码哈希
-	RealName     string // 员工姓名
-	Phone        string // 手机号
-	Email        string // 邮箱
-	Status       string // 状态：1正常 0禁用
-	LastLoginAt  string // 最后登录时间
-	CreatedAt    string // 创建时间
-	UpdatedAt    string // 更新时间
-	DeletedAt    string // 删除时间
+	Id           string // Employee ID
+	Username     string // Login username
+	PasswordHash string // BCrypt password hash
+	RealName     string // Employee name
+	Phone        string // Phone number
+	Email        string // Email address
+	Status       string // Status: 1 active, 0 disabled
+	LastLoginAt  string // Last login time
+	CreatedAt    string // Created time
+	UpdatedAt    string // Updated time
+	DeletedAt    string // Deleted time
 }
 
 // employeeInfoColumns holds the columns for the table employee_info.

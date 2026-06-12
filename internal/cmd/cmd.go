@@ -54,6 +54,11 @@ var Main = gcmd.Command{
 					backend.Points.ManageDeduct,
 					backend.Points.ManageRecords,
 					backend.Category.List,
+					backend.Goods.Create,
+					backend.Goods.List,
+					backend.Goods.Detail,
+					backend.Goods.Update,
+					backend.Goods.Status,
 				)
 			})
 		})

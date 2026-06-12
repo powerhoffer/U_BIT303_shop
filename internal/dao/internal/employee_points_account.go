@@ -21,13 +21,13 @@ type EmployeePointsAccountDao struct {
 
 // EmployeePointsAccountColumns defines and stores column names for the table employee_points_account.
 type EmployeePointsAccountColumns struct {
-	Id         string // 积分账户ID
-	EmployeeId string // 员工ID
-	Balance    string // 当前可用积分
-	Status     string // 状态：1正常 0停用
-	CreatedAt  string // 创建时间
-	UpdatedAt  string // 更新时间
-	DeletedAt  string // 删除时间
+	Id         string // Credit account ID
+	EmployeeId string // Employee ID
+	Balance    string // Available credit balance
+	Status     string // Status: 1 active, 0 disabled
+	CreatedAt  string // Created time
+	UpdatedAt  string // Updated time
+	DeletedAt  string // Deleted time
 }
 
 // employeePointsAccountColumns holds the columns for the table employee_points_account.

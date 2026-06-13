@@ -17,6 +17,8 @@ type (
 		Detail(ctx context.Context, id uint) (out model.GoodsDetailOutput, err error)
 		Update(ctx context.Context, in model.GoodsUpdateInput) (out model.GoodsUpdateOutput, err error)
 		UpdateStatus(ctx context.Context, in model.GoodsStatusInput) error
+		FrontendList(ctx context.Context, in model.FrontendGoodsListInput) (out model.FrontendGoodsListOutput, err error)
+		FrontendDetail(ctx context.Context, id uint) (out model.FrontendGoodsDetailOutput, err error)
 	}
 )
 

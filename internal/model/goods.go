@@ -51,6 +51,24 @@ type GoodsStatusInput struct {
 	Status int
 }
 
+type FrontendGoodsListInput struct {
+	Page       int
+	Size       int
+	CategoryId uint
+	Name       string
+}
+
+type FrontendGoodsListOutput struct {
+	List  []FrontendGoodsListItem
+	Total int
+	Page  int
+	Size  int
+}
+
+type FrontendGoodsDetailOutput struct {
+	Goods FrontendGoodsDetailItem
+}
+
 type GoodsItem struct {
 	Id           uint
 	CategoryId   uint
@@ -61,4 +79,25 @@ type GoodsItem struct {
 	Stock        uint
 	Description  string
 	Status       int
+}
+
+type FrontendGoodsListItem struct {
+	Id           uint
+	CategoryId   uint
+	CategoryName string
+	Name         string
+	ImageUrl     string
+	PointsPrice  uint
+	Stock        uint
+}
+
+type FrontendGoodsDetailItem struct {
+	Id           uint
+	CategoryId   uint
+	CategoryName string
+	Name         string
+	ImageUrl     string
+	PointsPrice  uint
+	Stock        uint
+	Description  string
 }

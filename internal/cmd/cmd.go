@@ -69,6 +69,8 @@ var Main = gcmd.Command{
 			)
 			group.Bind(
 				frontend.Category.List,
+				frontend.Goods.List,
+				frontend.Goods.Detail,
 			)
 		})
 		s.Run()

@@ -158,6 +158,63 @@ func (s *sGoods) UpdateStatus(ctx context.Context, in model.GoodsStatusInput) er
 	return err
 }
 
+func (s *sGoods) FrontendList(ctx context.Context, in model.FrontendGoodsListInput) (out model.FrontendGoodsListOutput, err error) {
+	goodsOut, err := s.List(ctx, model.GoodsListInput{
+		Page:       in.Page,
+		Size:       in.Size,
+		CategoryId: in.CategoryId,
+		Name:       in.Name,
+		Status:     consts.GoodsStatusOnShelf,
+	})
+	if err != nil {
+		return out, err
+	}
+	out = model.FrontendGoodsListOutput{
+		List:  make([]model.FrontendGoodsListItem, 0, len(goodsOut.List)),
+		Total: goodsOut.Total,
+		Page:  goodsOut.Page,
+		Size:  goodsOut.Size,
+	}
+	for _, item := range goodsOut.List {
+		out.List = append(out.List, model.FrontendGoodsListItem{
+			Id:           item.Id,
+			CategoryId:   item.CategoryId,
+			CategoryName: item.CategoryName,
+			Name:         item.Name,
+			ImageUrl:     item.ImageUrl,
+			PointsPrice:  item.PointsPrice,
+			Stock:        item.Stock,
+		})
+	}
+	return out, nil
+}
+
+func (s *sGoods) FrontendDetail(ctx context.Context, id uint) (out model.FrontendGoodsDetailOutput, err error) {
+	goods, err := s.getGoodsById(ctx, id)
+	if err != nil {
+		return out, err
+	}
+	if goods.Id == 0 || goods.Status != consts.GoodsStatusOnShelf {
+		return out, errors.New("商品不存在或已下架")
+	}
+	items, err := s.toGoodsItems(ctx, []entity.GoodsInfo{goods})
+	if err != nil {
+		return out, err
+	}
+	item := items[0]
+	out.Goods = model.FrontendGoodsDetailItem{
+		Id:           item.Id,
+		CategoryId:   item.CategoryId,
+		CategoryName: item.CategoryName,
+		Name:         item.Name,
+		ImageUrl:     item.ImageUrl,
+		PointsPrice:  item.PointsPrice,
+		Stock:        item.Stock,
+		Description:  item.Description,
+	}
+	return out, nil
+}
+
 func (s *sGoods) checkCategory(ctx context.Context, categoryId uint) error {
 	columns := dao.GoodsCategory.Columns()
 	count, err := dao.GoodsCategory.Ctx(ctx).

@@ -92,6 +92,20 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/goods',
+    component: Layout,
+    redirect: '/goods/list',
+    meta: { title: 'Goods', icon: 'shopping' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/goods/index'),
+        name: 'GoodsList',
+        meta: { title: 'Goods Management', icon: 'shopping' }
+      }
+    ]
+  },
+  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/password',

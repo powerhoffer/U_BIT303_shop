@@ -28,7 +28,7 @@ func New() *sCart {
 
 func (s *sCart) Add(ctx context.Context, in model.CartAddInput) (out model.CartAddOutput, err error) {
 	if in.Count <= 0 {
-		return out, errors.New("商品数量必须大于0")
+		return out, errors.New("Goods count must be greater than 0")
 	}
 	if _, err = s.getAvailableGoods(ctx, in.GoodsId); err != nil {
 		return out, err
@@ -109,7 +109,7 @@ func (s *sCart) List(ctx context.Context, in model.CartListInput) (out model.Car
 
 func (s *sCart) Update(ctx context.Context, in model.CartUpdateInput) (out model.CartUpdateOutput, err error) {
 	if in.Count < 0 {
-		return out, errors.New("商品数量不能小于0")
+		return out, errors.New("Goods count cannot be negative")
 	}
 	cart, err := s.getEmployeeCart(ctx, in.EmployeeId, in.Id)
 	if err != nil {
@@ -151,13 +151,13 @@ func (s *sCart) getAvailableGoods(ctx context.Context, goodsId uint) (goods enti
 		WhereNull(columns.DeletedAt).
 		Scan(&goods)
 	if errors.Is(err, sql.ErrNoRows) {
-		return goods, errors.New("商品不存在或已下架")
+		return goods, errors.New("Goods does not exist or is off shelf")
 	}
 	if err != nil {
 		return goods, err
 	}
 	if goods.Id == 0 {
-		return goods, errors.New("商品不存在或已下架")
+		return goods, errors.New("Goods does not exist or is off shelf")
 	}
 	return goods, nil
 }
@@ -170,13 +170,13 @@ func (s *sCart) getEmployeeCart(ctx context.Context, employeeId, id uint) (cart 
 		WhereNull(columns.DeletedAt).
 		Scan(&cart)
 	if errors.Is(err, sql.ErrNoRows) {
-		return cart, errors.New("购物车项不存在")
+		return cart, errors.New("Cart item does not exist")
 	}
 	if err != nil {
 		return cart, err
 	}
 	if cart.Id == 0 {
-		return cart, errors.New("购物车项不存在")
+		return cart, errors.New("Cart item does not exist")
 	}
 	return cart, nil
 }

@@ -97,7 +97,7 @@ func (s *sGoods) Detail(ctx context.Context, id uint) (out model.GoodsDetailOutp
 		return out, err
 	}
 	if goods.Id == 0 {
-		return out, errors.New("商品不存在")
+		return out, errors.New("Goods does not exist")
 	}
 	items, err := s.toGoodsItems(ctx, []entity.GoodsInfo{goods})
 	if err != nil {
@@ -113,7 +113,7 @@ func (s *sGoods) Update(ctx context.Context, in model.GoodsUpdateInput) (out mod
 		return out, err
 	}
 	if goods.Id == 0 {
-		return out, errors.New("商品不存在")
+		return out, errors.New("Goods does not exist")
 	}
 	if err = s.checkCategory(ctx, in.CategoryId); err != nil {
 		return out, err
@@ -142,14 +142,14 @@ func (s *sGoods) Update(ctx context.Context, in model.GoodsUpdateInput) (out mod
 
 func (s *sGoods) UpdateStatus(ctx context.Context, in model.GoodsStatusInput) error {
 	if in.Status != consts.GoodsStatusOffShelf && in.Status != consts.GoodsStatusOnShelf {
-		return errors.New("状态只能是0或1")
+		return errors.New("Status must be 0 or 1")
 	}
 	goods, err := s.getGoodsById(ctx, in.Id)
 	if err != nil {
 		return err
 	}
 	if goods.Id == 0 {
-		return errors.New("商品不存在")
+		return errors.New("Goods does not exist")
 	}
 	_, err = dao.GoodsInfo.Ctx(ctx).
 		Where(dao.GoodsInfo.Columns().Id, in.Id).
@@ -195,7 +195,7 @@ func (s *sGoods) FrontendDetail(ctx context.Context, id uint) (out model.Fronten
 		return out, err
 	}
 	if goods.Id == 0 || goods.Status != consts.GoodsStatusOnShelf {
-		return out, errors.New("商品不存在或已下架")
+		return out, errors.New("Goods does not exist or is off shelf")
 	}
 	items, err := s.toGoodsItems(ctx, []entity.GoodsInfo{goods})
 	if err != nil {
@@ -226,7 +226,7 @@ func (s *sGoods) checkCategory(ctx context.Context, categoryId uint) error {
 		return err
 	}
 	if count == 0 {
-		return errors.New("商品分类不存在或已停用")
+		return errors.New("Category does not exist or is disabled")
 	}
 	return nil
 }

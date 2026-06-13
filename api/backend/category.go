@@ -3,7 +3,7 @@ package backend
 import "github.com/gogf/gf/v2/frame/g"
 
 type CategoryListReq struct {
-	g.Meta `path:"/category/list" method:"get" tags:"后台商品分类" summary:"后台商品分类列表"`
+	g.Meta `path:"/category/list" method:"get" tags:"Backend Categories" summary:"Backend category list"`
 }
 
 type CategoryListRes struct {

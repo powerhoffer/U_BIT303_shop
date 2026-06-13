@@ -38,7 +38,7 @@ func (s *sEmployee) Register(ctx context.Context, in model.EmployeeRegisterInput
 		return out, err
 	}
 	if count > 0 {
-		return out, errors.New("员工账号已存在")
+		return out, errors.New("Employee account already exists")
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
@@ -73,18 +73,18 @@ func (s *sEmployee) Login(ctx context.Context, in model.EmployeeLoginInput) (out
 	employee, err := s.getNormalEmployeeByUsername(ctx, in.Username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return out, errors.New("账号或者密码不正确")
+			return out, errors.New("Invalid username or password")
 		}
 		return out, err
 	}
 	if employee.Id == 0 {
-		return out, errors.New("账号或者密码不正确")
+		return out, errors.New("Invalid username or password")
 	}
 	if employee.Status != consts.EmployeeStatusNormal {
-		return out, errors.New("员工账号已禁用")
+		return out, errors.New("Employee account is disabled")
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(employee.PasswordHash), []byte(in.Password)); err != nil {
-		return out, errors.New("账号或者密码不正确")
+		return out, errors.New("Invalid username or password")
 	}
 
 	out.Token, out.ExpireAt, err = utility.GenerateEmployeeToken(employee.Id, employee.Username, in.Remember)
@@ -109,7 +109,7 @@ func (s *sEmployee) Info(ctx context.Context, employeeId uint) (out model.Employ
 		return out, err
 	}
 	if employee.Id == 0 {
-		return out, errors.New("员工账号不存在")
+		return out, errors.New("Employee account does not exist")
 	}
 	out.Employee = toEmployeeBase(employee)
 	return out, nil
@@ -121,10 +121,10 @@ func (s *sEmployee) UpdatePassword(ctx context.Context, in model.EmployeeUpdateP
 		return err
 	}
 	if employee.Id == 0 {
-		return errors.New("员工账号不存在")
+		return errors.New("Employee account does not exist")
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(employee.PasswordHash), []byte(in.OldPassword)); err != nil {
-		return errors.New("旧密码不正确")
+		return errors.New("Current password is incorrect")
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(in.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
@@ -206,7 +206,7 @@ func (s *sEmployee) ManageDetail(ctx context.Context, id uint) (out model.Employ
 		return out, err
 	}
 	if employee.Id == 0 {
-		return out, errors.New("员工账号不存在")
+		return out, errors.New("Employee account does not exist")
 	}
 	out.Employee = toEmployeeBase(employee)
 	return out, nil
@@ -218,7 +218,7 @@ func (s *sEmployee) ManageUpdate(ctx context.Context, in model.EmployeeManageUpd
 		return out, err
 	}
 	if employee.Id == 0 {
-		return out, errors.New("员工账号不存在")
+		return out, errors.New("Employee account does not exist")
 	}
 	_, err = dao.EmployeeInfo.Ctx(ctx).
 		Where(dao.EmployeeInfo.Columns().Id, in.Id).
@@ -241,14 +241,14 @@ func (s *sEmployee) ManageUpdate(ctx context.Context, in model.EmployeeManageUpd
 
 func (s *sEmployee) ManageUpdateStatus(ctx context.Context, in model.EmployeeManageStatusInput) error {
 	if in.Status != consts.EmployeeStatusDisabled && in.Status != consts.EmployeeStatusNormal {
-		return errors.New("状态只能是0或1")
+		return errors.New("Status must be 0 or 1")
 	}
 	employee, err := s.getEmployeeById(ctx, in.Id)
 	if err != nil {
 		return err
 	}
 	if employee.Id == 0 {
-		return errors.New("员工账号不存在")
+		return errors.New("Employee account does not exist")
 	}
 	_, err = dao.EmployeeInfo.Ctx(ctx).
 		Where(dao.EmployeeInfo.Columns().Id, in.Id).
@@ -263,7 +263,7 @@ func (s *sEmployee) ManageResetPassword(ctx context.Context, in model.EmployeeMa
 		return err
 	}
 	if employee.Id == 0 {
-		return errors.New("员工账号不存在")
+		return errors.New("Employee account does not exist")
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	if err != nil {

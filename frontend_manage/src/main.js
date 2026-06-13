@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 import 'normalize.css/normalize.css'
 import Element from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/en'
 import './styles/element-variables.scss'
 import '@/styles/index.scss'
 import App from './App'
@@ -12,7 +13,8 @@ import './permission'
 import * as filters from './filters'
 
 Vue.use(Element, {
-  size: Cookies.get('size') || 'medium'
+  size: Cookies.get('size') || 'medium',
+  locale
 })
 
 Object.keys(filters).forEach(key => {

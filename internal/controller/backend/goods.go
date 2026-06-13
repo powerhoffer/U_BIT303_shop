@@ -71,7 +71,7 @@ func (c *cGoods) Status(ctx context.Context, req *backend.GoodsStatusReq) (res *
 	if err != nil {
 		return nil, err
 	}
-	return &backend.GoodsStatusRes{Message: "状态更新成功"}, nil
+	return &backend.GoodsStatusRes{Message: "Status updated successfully"}, nil
 }
 
 func toApiGoodsItems(in []model.GoodsItem) []backend.GoodsItem {

@@ -3,9 +3,9 @@ package frontend
 import "github.com/gogf/gf/v2/frame/g"
 
 type CartAddReq struct {
-	g.Meta  `path:"/cart/add" method:"post" tags:"前台购物车" summary:"加入购物车"`
-	GoodsId uint `json:"goods_id" v:"required|min:1#商品ID不能为空|商品ID错误"`
-	Count   int  `json:"count" v:"required|min:1#商品数量不能为空|商品数量必须大于0"`
+	g.Meta  `path:"/cart/add" method:"post" tags:"Frontend Cart" summary:"Add to cart"`
+	GoodsId uint `json:"goods_id" v:"required|min:1#Goods ID is required|Goods ID is invalid"`
+	Count   int  `json:"count" v:"required|min:1#Goods count is required|Goods count must be greater than 0"`
 }
 
 type CartAddRes struct {
@@ -13,9 +13,9 @@ type CartAddRes struct {
 }
 
 type CartListReq struct {
-	g.Meta `path:"/cart/list" method:"get" tags:"前台购物车" summary:"购物车列表"`
-	Page   int `json:"page" in:"query" d:"1" v:"min:1#分页页码错误"`
-	Size   int `json:"size" in:"query" d:"10" v:"max:50#分页数量最多50条"`
+	g.Meta `path:"/cart/list" method:"get" tags:"Frontend Cart" summary:"Cart list"`
+	Page   int `json:"page" in:"query" d:"1" v:"min:1#Page number is invalid"`
+	Size   int `json:"size" in:"query" d:"10" v:"max:50#Page size must be at most 50"`
 }
 
 type CartListRes struct {
@@ -26,9 +26,9 @@ type CartListRes struct {
 }
 
 type CartUpdateReq struct {
-	g.Meta `path:"/cart/update" method:"post" tags:"前台购物车" summary:"更新购物车商品数量"`
-	Id     uint `json:"id" v:"required|min:1#购物车ID不能为空|购物车ID错误"`
-	Count  int  `json:"count" v:"required|min:0#商品数量不能为空|商品数量不能小于0"`
+	g.Meta `path:"/cart/update" method:"post" tags:"Frontend Cart" summary:"Update cart item count"`
+	Id     uint `json:"id" v:"required|min:1#Cart ID is required|Cart ID is invalid"`
+	Count  int  `json:"count" v:"required|min:0#Goods count is required|Goods count cannot be negative"`
 }
 
 type CartUpdateRes struct {
@@ -36,8 +36,8 @@ type CartUpdateRes struct {
 }
 
 type CartRemoveReq struct {
-	g.Meta `path:"/cart/remove" method:"post" tags:"前台购物车" summary:"移除购物车商品"`
-	Id     uint `json:"id" v:"required|min:1#购物车ID不能为空|购物车ID错误"`
+	g.Meta `path:"/cart/remove" method:"post" tags:"Frontend Cart" summary:"Remove cart item"`
+	Id     uint `json:"id" v:"required|min:1#Cart ID is required|Cart ID is invalid"`
 }
 
 type CartRemoveRes struct {

@@ -72,6 +72,15 @@ var Main = gcmd.Command{
 				frontend.Goods.List,
 				frontend.Goods.Detail,
 			)
+			group.Group("/", func(group *ghttp.RouterGroup) {
+				group.Middleware(service.Middleware().EmployeeAuth)
+				group.Bind(
+					frontend.Cart.Add,
+					frontend.Cart.List,
+					frontend.Cart.Update,
+					frontend.Cart.Remove,
+				)
+			})
 		})
 		s.Run()
 		return nil

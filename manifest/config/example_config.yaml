@@ -23,5 +23,5 @@ gfcli:
   gen:
     dao:
       - link: "mysql:root:123456@tcp(127.0.0.1:3306)/bit303_shop"
-        tables: "employee_info,employee_points_account,employee_points_record,goods_category,goods_info"
+        tables: "employee_info,employee_points_account,employee_points_record,goods_category,goods_info,cart_info"
         path: "./internal"

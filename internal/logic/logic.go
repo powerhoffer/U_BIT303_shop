@@ -1,6 +1,7 @@
 package logic
 
 import (
+	_ "bit303_shop/internal/logic/cart"
 	_ "bit303_shop/internal/logic/category"
 	_ "bit303_shop/internal/logic/employee"
 	_ "bit303_shop/internal/logic/goods"

@@ -84,6 +84,20 @@ CREATE TABLE IF NOT EXISTS `goods_info` (
   KEY `idx_goods_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品信息表';
 
+CREATE TABLE IF NOT EXISTS `cart_info` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '购物车ID',
+  `employee_id` int unsigned NOT NULL COMMENT '员工ID',
+  `goods_id` int unsigned NOT NULL COMMENT '商品ID',
+  `count` int unsigned NOT NULL DEFAULT 1 COMMENT '商品数量',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_cart_employee_id` (`employee_id`),
+  KEY `idx_cart_goods_id` (`goods_id`),
+  KEY `idx_cart_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='购物车表';
+
 INSERT INTO `employee_info` (`username`, `password_hash`, `real_name`, `phone`, `email`, `status`) VALUES
 ('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', 'System Administrator', '', '', 1)
 ON DUPLICATE KEY UPDATE

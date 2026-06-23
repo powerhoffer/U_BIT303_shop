@@ -2,7 +2,7 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on">
       <div class="title-container">
-        <h3 class="title">BIT303 Shop Admin</h3>
+        <h3 class="title">YUTANK Shop Admin</h3>
       </div>
 
       <el-form-item prop="username">

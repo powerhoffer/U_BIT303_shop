@@ -1,6 +1,6 @@
 import defaultSettings from '@/settings'
 
-const title = defaultSettings.title || 'BIT303 Shop Admin'
+const title = defaultSettings.title || 'YUTANK Shop Admin'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

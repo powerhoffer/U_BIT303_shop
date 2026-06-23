@@ -56,7 +56,7 @@ const actions = {
       const roles = ['*']
       commit('SET_NAME', name)
       commit('SET_AVATAR', defaultAvatar)
-      commit('SET_INTRODUCTION', 'BIT303 employee')
+      commit('SET_INTRODUCTION', 'YUTANK employee')
       commit('SET_ROLES', roles)
       localStorage.setItem('employee', JSON.stringify(employee))
       return { roles, name, employee }

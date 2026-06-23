@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: 'BIT303 Shop',
+      title: 'YUTANK Shop',
       logo: ''
     }
   }

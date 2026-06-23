@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'BIT303 Shop Admin',
+  title: 'YUTANK Shop Admin',
   showSettings: false,
   tagsView: true,
   fixedHeader: false,

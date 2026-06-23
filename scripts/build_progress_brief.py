@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'output' / 'progress-brief'
 IMG = OUT / 'screenshots'
-DOCX = OUT / 'BIT303_Interim_WIP_Submission.docx'
+DOCX = OUT / 'YUTANK_Interim_WIP_Submission.docx'
 OUT.mkdir(parents=True, exist_ok=True)
 IMG.mkdir(parents=True, exist_ok=True)
 
@@ -70,7 +70,7 @@ def base(title, subtitle):
     im = Image.new('RGB', (1440, 900), '#F4F6F8')
     d = ImageDraw.Draw(im)
     d.rectangle((0, 0, 1440, 72), fill='#263445')
-    text(d, (32, 22), 'BIT303 Shop Admin', 24, 'white', True)
+    text(d, (32, 22), 'YUTANK Shop Admin', 24, 'white', True)
     text(d, (1210, 24), 'System Administrator', 18, '#E7EEF7')
     d.rectangle((0, 72, 240, 900), fill='#304156')
     menu = ['Dashboard', 'Employees', 'Credits', 'Categories', 'Goods']
@@ -107,7 +107,7 @@ def save_login():
     im = Image.new('RGB', (1440, 900), '#2D3A4B')
     d = ImageDraw.Draw(im)
     box(d, (460, 170, 980, 690), '#2D3A4B', '#596979', 10, 1)
-    text(d, (575, 230), 'BIT303 Shop Admin', 36, '#EEEEEE', True)
+    text(d, (575, 230), 'YUTANK Shop Admin', 36, '#EEEEEE', True)
     for i, label in enumerate(['Employee username', 'Password']):
         y = 330 + i * 92
         box(d, (535, y, 905, y + 54), '#273445', '#4C5B6B', 6, 1)
@@ -319,7 +319,7 @@ def configure(doc):
         s.paragraph_format.space_after = Pt(after)
     footer = sec.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    run = footer.add_run('BIT303 Shop Project - Interim WIP Submission')
+    run = footer.add_run('YUTANK Shop Project - Interim WIP Submission')
     run.font.size = Pt(9)
     run.font.color.rgb = MUTED
 
@@ -337,7 +337,7 @@ def caption(doc, value):
 doc = Document()
 configure(doc)
 p = doc.add_paragraph()
-r = p.add_run('BIT303 Shop Project - Interim Work-in-Progress Submission')
+r = p.add_run('YUTANK Shop Project - Interim Work-in-Progress Submission')
 r.font.size = Pt(24)
 r.font.bold = True
 r.font.color.rgb = RGBColor(11, 37, 69)
@@ -348,7 +348,7 @@ r2.font.size = Pt(13)
 r2.font.color.rgb = DARK
 
 add_table(doc, ['Item', 'Details'], [
-    ('Project focus', 'Back-office management system for the BIT303 employee welfare shop.'),
+    ('Project focus', 'Back-office management system for the YUTANK employee welfare shop.'),
     ('Current status', 'Work-in-progress submission with implemented admin modules and demo evidence.'),
     ('Excluded scope', 'Shopping cart functionality is not included in this interim submission.'),
     ('Verification', 'Backend compilation and frontend production build have completed successfully; frontend build warnings were asset-size warnings only.')

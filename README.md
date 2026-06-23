@@ -1,48 +1,42 @@
-# BIT303 商城管理系统使用说明
+# BIT303 Shop Management System
 
-## 管理端前端使用说明
+[Chinese version](README-zh.md)
 
-### 1. 启动服务
+## Admin Frontend Usage
 
-先启动后端服务，默认接口地址：
+### 1. Start the Services
 
-```bash
-http://127.0.0.1:8000
-```
+Start the backend service first. The default API address is:
 
-再启动管理端前端，默认访问地址：
+    http://127.0.0.1:8000
 
-```bash
-http://localhost:8080
-```
+Then start the admin frontend. The default frontend address is:
 
-### 2. 登录管理端
+    http://localhost:8080
 
-在浏览器中打开管理端登录页：
+### 2. Log In to the Admin Panel
 
-```bash
-http://localhost:8080/#/login
-```
+Open the admin login page in your browser:
 
-测试账号：
+    http://localhost:8080/#/login
 
-```text
-账号：root
-密码：123456
-```
+Test account:
 
-登录成功后会进入管理端工作台。
+    Username: root
+    Password: 123456
 
-### 3. 功能入口
+After a successful login, you will enter the admin dashboard.
 
-- 工作台：查看当前员工信息、我的积分和管理模块概览。
-- 员工列表：新增员工、编辑员工信息、启用或禁用员工、重置员工密码。
-- 我的积分：查看当前登录员工的积分余额和积分流水。
-- 积分操作：选择员工后进行加积分、扣积分，并查看员工积分流水。
-- 分类列表：查看当前商品分类信息。
-- 右上角用户菜单：修改当前登录账号密码，或退出登录。
+### 3. Available Features
 
-### 4. 注意事项
+- Dashboard: view the current employee, personal credits, and management module overview.
+- Employee List: create employees, edit employee information, enable or disable employees, and reset employee passwords.
+- My Credits: view the current employee credit balance and credit records.
+- Credit Operations: select an employee, add or deduct credits, and view the employee credit records.
+- Category List: view current goods category information.
+- User menu in the top-right corner: change the current account password or log out.
 
-- 管理端前端接口统一请求后端 `/backend` 路由。
-- 如果无法登录，请先确认客户环境中已经存在 `root` 员工账号，并且密码为 `123456`。
+### 4. Notes
+
+- The admin frontend sends backend API requests through the /backend route.
+- If login fails, first confirm that the target environment has the root employee account and that its password is 123456.

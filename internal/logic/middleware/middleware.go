@@ -12,6 +12,7 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
@@ -45,7 +46,12 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 		if code == gcode.CodeNil {
 			code = gcode.CodeInternalError
 		}
-		response.JsonExit(r, code.Code(), err.Error())
+		message := err.Error()
+		if shouldMaskErrorMessage(message) {
+			g.Log().Error(r.Context(), err)
+			message = "Operation failed"
+		}
+		response.JsonExit(r, code.Code(), message)
 		return
 	}
 	response.JsonExit(r, code.Code(), "", res)
@@ -88,4 +94,31 @@ func (s *sMiddleware) EmployeeAuth(r *ghttp.Request) {
 	r.SetCtxVar(consts.CtxEmployeeId, employee.Id)
 	r.SetCtxVar(consts.CtxEmployeeUsername, employee.Username)
 	r.Middleware.Next()
+}
+
+func shouldMaskErrorMessage(message string) bool {
+	normalized := strings.ToLower(message)
+	keywords := []string{
+		"select ",
+		"insert ",
+		"update ",
+		"delete ",
+		" from ",
+		" where ",
+		"sql",
+		"unknown database",
+		"no database selected",
+		"error 1049",
+		"error 1146",
+		"access denied",
+		"driver:",
+		"dial tcp",
+		"connection refused",
+	}
+	for _, keyword := range keywords {
+		if strings.Contains(normalized, keyword) {
+			return true
+		}
+	}
+	return false
 }

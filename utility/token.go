@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const employeeJwtSecret = "yutank_shop_employee_secret"
+const employeeJwtSecret = "bit303_shop_employee_secret"
 
 type EmployeeClaims struct {
 	EmployeeId uint   `json:"employee_id"`

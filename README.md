@@ -20,9 +20,9 @@ Default local database settings:
     Port: 3306
     User: root
     Password: 123456
-    Database: yutank_shop
+    Database: bit303_shop
 
-Note: yutank_shop is the default local development database name.
+Note: bit303_shop is the internal development database name. It is not displayed in the user interface; customer-facing pages use YUTANK.
 
 ## Start the Project
 

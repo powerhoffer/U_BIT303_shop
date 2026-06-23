@@ -20,9 +20,9 @@
     Port: 3306
     User: root
     Password: 123456
-    Database: yutank_shop
+    Database: bit303_shop
 
-说明：yutank_shop 是默认本地开发数据库名。
+说明：bit303_shop 是内部开发数据库名，不会展示在用户界面中；客户可见页面统一使用 YUTANK。
 
 ## 启动项目
 

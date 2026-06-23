@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS `yutank_shop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `bit303_shop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
-USE `yutank_shop`;
+USE `bit303_shop`;
 
 CREATE TABLE IF NOT EXISTS `employee_info` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '员工ID',

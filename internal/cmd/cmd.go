@@ -79,6 +79,10 @@ var Main = gcmd.Command{
 					frontend.Cart.List,
 					frontend.Cart.Update,
 					frontend.Cart.Remove,
+					frontend.Order.Create,
+					frontend.Order.List,
+					frontend.Order.Detail,
+					frontend.Order.Cancel,
 				)
 			})
 		})

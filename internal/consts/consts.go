@@ -29,3 +29,9 @@ const (
 	GoodsStatusOffShelf = 0
 	GoodsStatusOnShelf  = 1
 )
+
+const (
+	OrderStatusPending   = 1
+	OrderStatusCompleted = 2
+	OrderStatusCancelled = 3
+)

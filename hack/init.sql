@@ -98,6 +98,40 @@ CREATE TABLE IF NOT EXISTS `cart_info` (
   KEY `idx_cart_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='购物车表';
 
+CREATE TABLE IF NOT EXISTS `order_info` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Order ID',
+  `order_no` varchar(32) NOT NULL COMMENT 'Order number',
+  `employee_id` int unsigned NOT NULL COMMENT 'Employee ID',
+  `total_points` int unsigned NOT NULL DEFAULT 0 COMMENT 'Total points',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT 'Status: 1 pending 2 completed 3 cancelled',
+  `remark` varchar(255) NOT NULL DEFAULT '' COMMENT 'Remark',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated time',
+  `deleted_at` datetime DEFAULT NULL COMMENT 'Deleted time',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_order_no` (`order_no`),
+  KEY `idx_order_employee_id` (`employee_id`),
+  KEY `idx_order_status` (`status`),
+  KEY `idx_order_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Points redemption order table';
+
+CREATE TABLE IF NOT EXISTS `order_item` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Order item ID',
+  `order_id` int unsigned NOT NULL COMMENT 'Order ID',
+  `employee_id` int unsigned NOT NULL COMMENT 'Employee ID',
+  `goods_id` int unsigned NOT NULL COMMENT 'Goods ID',
+  `goods_name` varchar(128) NOT NULL COMMENT 'Goods name snapshot',
+  `goods_image_url` varchar(255) NOT NULL DEFAULT '' COMMENT 'Goods image snapshot',
+  `points_price` int unsigned NOT NULL COMMENT 'Points price snapshot',
+  `count` int unsigned NOT NULL COMMENT 'Goods count',
+  `total_points` int unsigned NOT NULL COMMENT 'Item total points',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  PRIMARY KEY (`id`),
+  KEY `idx_order_item_order_id` (`order_id`),
+  KEY `idx_order_item_employee_id` (`employee_id`),
+  KEY `idx_order_item_goods_id` (`goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Points redemption order item table';
+
 INSERT INTO `employee_info` (`username`, `password_hash`, `real_name`, `phone`, `email`, `status`) VALUES
 ('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', 'System Administrator', '', '', 1)
 ON DUPLICATE KEY UPDATE

@@ -387,3 +387,213 @@ func toOrderGoodsItem(item entity.OrderItem) model.OrderGoodsItem {
 	}
 	return out
 }
+
+func (s *sOrder) ManageList(ctx context.Context, in model.BackendOrderListInput) (out model.BackendOrderListOutput, err error) {
+	if in.Page < 1 {
+		in.Page = 1
+	}
+	if in.Size < 1 {
+		in.Size = 10
+	}
+	if in.Size > 50 {
+		in.Size = 50
+	}
+	columns := dao.OrderInfo.Columns()
+	m := dao.OrderInfo.Ctx(ctx).WhereNull(columns.DeletedAt)
+	if in.EmployeeId > 0 {
+		m = m.Where(columns.EmployeeId, in.EmployeeId)
+	}
+	if in.OrderNo != "" {
+		m = m.Where(columns.OrderNo+" LIKE ?", "%"+in.OrderNo+"%")
+	}
+	if in.Status == consts.OrderStatusPending || in.Status == consts.OrderStatusCompleted || in.Status == consts.OrderStatusCancelled {
+		m = m.Where(columns.Status, in.Status)
+	}
+	total, err := m.Count()
+	if err != nil {
+		return out, err
+	}
+	out = model.BackendOrderListOutput{List: make([]model.OrderBase, 0), Total: total, Page: in.Page, Size: in.Size}
+	if total == 0 {
+		return out, nil
+	}
+	var orders []entity.OrderInfo
+	if err = m.Page(in.Page, in.Size).OrderDesc(columns.Id).Scan(&orders); err != nil {
+		return out, err
+	}
+	for _, order := range orders {
+		out.List = append(out.List, toOrderBase(order))
+	}
+	return out, nil
+}
+
+func (s *sOrder) ManageDetail(ctx context.Context, in model.BackendOrderDetailInput) (out model.BackendOrderDetailOutput, err error) {
+	order, err := s.getOrderById(ctx, in.Id)
+	if err != nil {
+		return out, err
+	}
+	items, err := s.getOrderItemsByOrderId(ctx, in.Id)
+	if err != nil {
+		return out, err
+	}
+	out.Order = model.OrderDetail{OrderBase: toOrderBase(order), Items: items}
+	return out, nil
+}
+
+func (s *sOrder) ManageComplete(ctx context.Context, in model.BackendOrderCompleteInput) (out model.BackendOrderCompleteOutput, err error) {
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		order, err := s.getOrderByIdForUpdate(ctx, in.Id)
+		if err != nil {
+			return err
+		}
+		if order.Status != consts.OrderStatusPending {
+			return errors.New("Only pending orders can be completed")
+		}
+		if _, err = dao.OrderInfo.Ctx(ctx).
+			Where(dao.OrderInfo.Columns().Id, order.Id).
+			Data(g.Map{dao.OrderInfo.Columns().Status: consts.OrderStatusCompleted}).
+			Update(); err != nil {
+			return err
+		}
+		order.Status = consts.OrderStatusCompleted
+		out.Order = toOrderBase(order)
+		return nil
+	})
+	return out, err
+}
+
+func (s *sOrder) ManageCancel(ctx context.Context, in model.BackendOrderCancelInput) (out model.BackendOrderCancelOutput, err error) {
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		order, err := s.getOrderByIdForUpdate(ctx, in.Id)
+		if err != nil {
+			return err
+		}
+		if order.Status != consts.OrderStatusPending {
+			return errors.New("Only pending orders can be cancelled")
+		}
+		items, err := s.getOrderItemsByOrderId(ctx, in.Id)
+		if err != nil {
+			return err
+		}
+		if err = s.restoreStock(ctx, items); err != nil {
+			return err
+		}
+		if err = s.refundPoints(ctx, order, in.OperatorEmployeeId, "Backend cancel order refund: "+order.OrderNo); err != nil {
+			return err
+		}
+		if _, err = dao.OrderInfo.Ctx(ctx).
+			Where(dao.OrderInfo.Columns().Id, order.Id).
+			Data(g.Map{dao.OrderInfo.Columns().Status: consts.OrderStatusCancelled}).
+			Update(); err != nil {
+			return err
+		}
+		order.Status = consts.OrderStatusCancelled
+		out.Order = toOrderBase(order)
+		return nil
+	})
+	return out, err
+}
+
+func (s *sOrder) getOrderById(ctx context.Context, id uint) (order entity.OrderInfo, err error) {
+	columns := dao.OrderInfo.Columns()
+	err = dao.OrderInfo.Ctx(ctx).
+		Where(columns.Id, id).
+		WhereNull(columns.DeletedAt).
+		Scan(&order)
+	if errors.Is(err, sql.ErrNoRows) {
+		return order, errors.New("Order does not exist")
+	}
+	if err != nil {
+		return order, err
+	}
+	if order.Id == 0 {
+		return order, errors.New("Order does not exist")
+	}
+	return order, nil
+}
+
+func (s *sOrder) getOrderByIdForUpdate(ctx context.Context, id uint) (order entity.OrderInfo, err error) {
+	columns := dao.OrderInfo.Columns()
+	err = dao.OrderInfo.Ctx(ctx).
+		Where(columns.Id, id).
+		WhereNull(columns.DeletedAt).
+		LockUpdate().
+		Scan(&order)
+	if errors.Is(err, sql.ErrNoRows) {
+		return order, errors.New("Order does not exist")
+	}
+	if err != nil {
+		return order, err
+	}
+	if order.Id == 0 {
+		return order, errors.New("Order does not exist")
+	}
+	return order, nil
+}
+
+func (s *sOrder) getOrderItemsByOrderId(ctx context.Context, orderId uint) ([]model.OrderGoodsItem, error) {
+	columns := dao.OrderItem.Columns()
+	var items []entity.OrderItem
+	if err := dao.OrderItem.Ctx(ctx).
+		Where(columns.OrderId, orderId).
+		OrderAsc(columns.Id).
+		Scan(&items); err != nil {
+		return nil, err
+	}
+	out := make([]model.OrderGoodsItem, 0, len(items))
+	for _, item := range items {
+		out = append(out, toOrderGoodsItem(item))
+	}
+	return out, nil
+}
+
+func (s *sOrder) restoreStock(ctx context.Context, items []model.OrderGoodsItem) error {
+	goodsColumns := dao.GoodsInfo.Columns()
+	for _, item := range items {
+		var goods entity.GoodsInfo
+		if err := dao.GoodsInfo.Ctx(ctx).
+			Where(goodsColumns.Id, item.GoodsId).
+			WhereNull(goodsColumns.DeletedAt).
+			LockUpdate().
+			Scan(&goods); err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+		if goods.Id > 0 {
+			if _, err := dao.GoodsInfo.Ctx(ctx).
+				Where(goodsColumns.Id, goods.Id).
+				Data(g.Map{goodsColumns.Stock: goods.Stock + item.Count}).
+				Update(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (s *sOrder) refundPoints(ctx context.Context, order entity.OrderInfo, operatorEmployeeId uint, remark string) error {
+	account, err := s.getPointsAccountForUpdate(ctx, order.EmployeeId)
+	if err != nil {
+		return err
+	}
+	if account.Id == 0 {
+		return errors.New("Credit account does not exist")
+	}
+	beforeBalance := account.Balance
+	afterBalance := beforeBalance + order.TotalPoints
+	if _, err = dao.EmployeePointsAccount.Ctx(ctx).
+		Where(dao.EmployeePointsAccount.Columns().Id, account.Id).
+		Data(g.Map{dao.EmployeePointsAccount.Columns().Balance: afterBalance}).
+		Update(); err != nil {
+		return err
+	}
+	_, err = dao.EmployeePointsRecord.Ctx(ctx).Data(do.EmployeePointsRecord{
+		EmployeeId:         order.EmployeeId,
+		ChangeType:         consts.PointsChangeTypeAdd,
+		Points:             order.TotalPoints,
+		BeforeBalance:      beforeBalance,
+		AfterBalance:       afterBalance,
+		OperatorEmployeeId: operatorEmployeeId,
+		Remark:             remark,
+	}).Insert()
+	return err
+}

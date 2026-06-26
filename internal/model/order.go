@@ -69,3 +69,43 @@ type OrderGoodsItem struct {
 	TotalPoints   uint
 	CreatedAt     time.Time
 }
+
+type BackendOrderListInput struct {
+	Page       int
+	Size       int
+	EmployeeId uint
+	OrderNo    string
+	Status     int
+}
+
+type BackendOrderListOutput struct {
+	List  []OrderBase
+	Total int
+	Page  int
+	Size  int
+}
+
+type BackendOrderDetailInput struct {
+	Id uint
+}
+
+type BackendOrderDetailOutput struct {
+	Order OrderDetail
+}
+
+type BackendOrderCompleteInput struct {
+	Id uint
+}
+
+type BackendOrderCompleteOutput struct {
+	Order OrderBase
+}
+
+type BackendOrderCancelInput struct {
+	Id                 uint
+	OperatorEmployeeId uint
+}
+
+type BackendOrderCancelOutput struct {
+	Order OrderBase
+}

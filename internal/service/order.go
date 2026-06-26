@@ -16,6 +16,10 @@ type (
 		List(ctx context.Context, in model.OrderListInput) (out model.OrderListOutput, err error)
 		Detail(ctx context.Context, in model.OrderDetailInput) (out model.OrderDetailOutput, err error)
 		Cancel(ctx context.Context, in model.OrderCancelInput) (out model.OrderCancelOutput, err error)
+		ManageList(ctx context.Context, in model.BackendOrderListInput) (out model.BackendOrderListOutput, err error)
+		ManageDetail(ctx context.Context, in model.BackendOrderDetailInput) (out model.BackendOrderDetailOutput, err error)
+		ManageComplete(ctx context.Context, in model.BackendOrderCompleteInput) (out model.BackendOrderCompleteOutput, err error)
+		ManageCancel(ctx context.Context, in model.BackendOrderCancelInput) (out model.BackendOrderCancelOutput, err error)
 	}
 )
 

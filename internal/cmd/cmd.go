@@ -59,6 +59,10 @@ var Main = gcmd.Command{
 					backend.Goods.Detail,
 					backend.Goods.Update,
 					backend.Goods.Status,
+					backend.Order.List,
+					backend.Order.Detail,
+					backend.Order.Complete,
+					backend.Order.Cancel,
 				)
 			})
 		})

@@ -106,6 +106,20 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/order',
+    component: Layout,
+    redirect: '/order/list',
+    meta: { title: 'Orders', icon: 'clipboard' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/order/index'),
+        name: 'OrderList',
+        meta: { title: 'Order Management', icon: 'clipboard' }
+      }
+    ]
+  },
+  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/password',

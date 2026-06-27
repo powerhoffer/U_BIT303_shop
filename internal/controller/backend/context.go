@@ -15,3 +15,11 @@ func currentEmployeeId(ctx context.Context) uint {
 	}
 	return r.GetCtxVar(consts.CtxEmployeeId).Uint()
 }
+
+func currentAdminId(ctx context.Context) uint {
+	r := g.RequestFromCtx(ctx)
+	if r == nil {
+		return 0
+	}
+	return r.GetCtxVar(consts.CtxAdminId).Uint()
+}

@@ -169,3 +169,128 @@ WHERE `name` IN ('办公零食', '福利商品', '办公用品');
 
 UPDATE `employee_info` SET `real_name` = 'Test Employee' WHERE `real_name` = '测试员工';
 UPDATE `employee_info` SET `real_name` = 'Goods Manager' WHERE `real_name` = '商品管理员';
+
+CREATE TABLE IF NOT EXISTS admin_info (
+  id int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Admin ID',
+  username varchar(64) NOT NULL COMMENT 'Login username',
+  password_hash varchar(100) NOT NULL COMMENT 'bcrypt password hash',
+  real_name varchar(64) NOT NULL DEFAULT '' COMMENT 'Admin name',
+  phone varchar(20) NOT NULL DEFAULT '' COMMENT 'Phone',
+  email varchar(128) NOT NULL DEFAULT '' COMMENT 'Email',
+  status tinyint NOT NULL DEFAULT 1 COMMENT 'Status: 1 normal 0 disabled',
+  is_super tinyint NOT NULL DEFAULT 0 COMMENT 'Is super admin: 1 yes 0 no',
+  last_login_at datetime DEFAULT NULL COMMENT 'Last login time',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated time',
+  deleted_at datetime DEFAULT NULL COMMENT 'Deleted time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_admin_username (username),
+  KEY idx_admin_status (status),
+  KEY idx_admin_deleted_at (deleted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Admin account table';
+
+CREATE TABLE IF NOT EXISTS admin_role (
+  id int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Role ID',
+  name varchar(64) NOT NULL COMMENT 'Role name',
+  description varchar(255) NOT NULL DEFAULT '' COMMENT 'Role description',
+  status tinyint NOT NULL DEFAULT 1 COMMENT 'Status: 1 enabled 0 disabled',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated time',
+  deleted_at datetime DEFAULT NULL COMMENT 'Deleted time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_admin_role_name (name),
+  KEY idx_admin_role_status (status),
+  KEY idx_admin_role_deleted_at (deleted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Admin role table';
+
+CREATE TABLE IF NOT EXISTS admin_permission (
+  id int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Permission ID',
+  name varchar(128) NOT NULL COMMENT 'Permission name',
+  group_name varchar(64) NOT NULL DEFAULT '' COMMENT 'Permission group',
+  method varchar(10) NOT NULL COMMENT 'HTTP method',
+  path varchar(255) NOT NULL COMMENT 'API path',
+  status tinyint NOT NULL DEFAULT 1 COMMENT 'Status: 1 enabled 0 disabled',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated time',
+  deleted_at datetime DEFAULT NULL COMMENT 'Deleted time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_admin_permission_method_path (method, path),
+  KEY idx_admin_permission_group (group_name),
+  KEY idx_admin_permission_status (status),
+  KEY idx_admin_permission_deleted_at (deleted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Admin API permission table';
+
+CREATE TABLE IF NOT EXISTS admin_role_relation (
+  id int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Relation ID',
+  admin_id int unsigned NOT NULL COMMENT 'Admin ID',
+  role_id int unsigned NOT NULL COMMENT 'Role ID',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_admin_role_relation (admin_id, role_id),
+  KEY idx_admin_role_relation_admin (admin_id),
+  KEY idx_admin_role_relation_role (role_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Admin role relation table';
+
+CREATE TABLE IF NOT EXISTS admin_role_permission (
+  id int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Relation ID',
+  role_id int unsigned NOT NULL COMMENT 'Role ID',
+  permission_id int unsigned NOT NULL COMMENT 'Permission ID',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_admin_role_permission (role_id, permission_id),
+  KEY idx_admin_role_permission_role (role_id),
+  KEY idx_admin_role_permission_permission (permission_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Admin role permission relation table';
+
+INSERT INTO admin_info (username, password_hash, real_name, phone, email, status, is_super) VALUES
+('root', '$2a$10$wkJo.7jih/0EbEehrNG.seMN5Rm3VZP90xxlK6bebLZDoq5K77W8C', 'System Administrator', '', '', 1, 1)
+ON DUPLICATE KEY UPDATE
+  password_hash = VALUES(password_hash),
+  real_name = VALUES(real_name),
+  status = VALUES(status),
+  is_super = VALUES(is_super),
+  deleted_at = NULL;
+
+INSERT INTO admin_permission (name, group_name, method, path, status) VALUES
+('Create employee', 'Employee Management', 'POST', '/backend/employee/manage/create', 1),
+('Employee list', 'Employee Management', 'GET', '/backend/employee/manage/list', 1),
+('Employee detail', 'Employee Management', 'GET', '/backend/employee/manage/detail', 1),
+('Update employee', 'Employee Management', 'POST', '/backend/employee/manage/update', 1),
+('Update employee status', 'Employee Management', 'POST', '/backend/employee/manage/status', 1),
+('Reset employee password', 'Employee Management', 'POST', '/backend/employee/manage/reset-password', 1),
+('Add employee credits', 'Credit Management', 'POST', '/backend/points/manage/add', 1),
+('Deduct employee credits', 'Credit Management', 'POST', '/backend/points/manage/deduct', 1),
+('Employee credit records', 'Credit Management', 'GET', '/backend/points/manage/records', 1),
+('Backend category list', 'Goods Management', 'GET', '/backend/category/list', 1),
+('Create goods', 'Goods Management', 'POST', '/backend/goods/create', 1),
+('Goods list', 'Goods Management', 'GET', '/backend/goods/list', 1),
+('Goods detail', 'Goods Management', 'GET', '/backend/goods/detail', 1),
+('Update goods', 'Goods Management', 'POST', '/backend/goods/update', 1),
+('Update goods status', 'Goods Management', 'POST', '/backend/goods/status', 1),
+('Backend order list', 'Order Management', 'GET', '/backend/order/list', 1),
+('Backend order detail', 'Order Management', 'GET', '/backend/order/detail', 1),
+('Complete order', 'Order Management', 'POST', '/backend/order/complete', 1),
+('Cancel order', 'Order Management', 'POST', '/backend/order/cancel', 1),
+('Create admin', 'Admin Management', 'POST', '/backend/admin/manage/create', 1),
+('Admin list', 'Admin Management', 'GET', '/backend/admin/manage/list', 1),
+('Admin detail', 'Admin Management', 'GET', '/backend/admin/manage/detail', 1),
+('Update admin', 'Admin Management', 'POST', '/backend/admin/manage/update', 1),
+('Update admin status', 'Admin Management', 'POST', '/backend/admin/manage/status', 1),
+('Reset admin password', 'Admin Management', 'POST', '/backend/admin/manage/reset-password', 1),
+('Assign admin roles', 'Admin Management', 'POST', '/backend/admin/manage/roles', 1),
+('Create role', 'Role Management', 'POST', '/backend/role/create', 1),
+('Role list', 'Role Management', 'GET', '/backend/role/list', 1),
+('Role detail', 'Role Management', 'GET', '/backend/role/detail', 1),
+('Update role', 'Role Management', 'POST', '/backend/role/update', 1),
+('Update role status', 'Role Management', 'POST', '/backend/role/status', 1),
+('Assign role permissions', 'Role Management', 'POST', '/backend/role/permissions', 1),
+('Permission list', 'Permission Management', 'GET', '/backend/permission/list', 1),
+('Permission detail', 'Permission Management', 'GET', '/backend/permission/detail', 1),
+('Create permission', 'Permission Management', 'POST', '/backend/permission/create', 1),
+('Update permission', 'Permission Management', 'POST', '/backend/permission/update', 1),
+('Update permission status', 'Permission Management', 'POST', '/backend/permission/status', 1)
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  group_name = VALUES(group_name),
+  status = VALUES(status),
+  deleted_at = NULL;

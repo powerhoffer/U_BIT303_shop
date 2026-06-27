@@ -14,6 +14,8 @@ type (
 		CORS(r *ghttp.Request)
 		ResponseHandler(r *ghttp.Request)
 		EmployeeAuth(r *ghttp.Request)
+		AdminAuth(r *ghttp.Request)
+		AdminPermissionAuth(r *ghttp.Request)
 	}
 )
 

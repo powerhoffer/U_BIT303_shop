@@ -7,10 +7,19 @@ const (
 )
 
 const (
-	EmployeeStatusDisabled = 0
-	EmployeeStatusNormal   = 1
-	CtxEmployeeId          = "employee_id"
-	CtxEmployeeUsername    = "employee_username"
+	EmployeeStatusDisabled  = 0
+	EmployeeStatusNormal    = 1
+	CtxEmployeeId           = "employee_id"
+	CtxEmployeeUsername     = "employee_username"
+	AdminStatusDisabled     = 0
+	AdminStatusNormal       = 1
+	AdminRoleDisabled       = 0
+	AdminRoleEnabled        = 1
+	AdminPermissionDisabled = 0
+	AdminPermissionEnabled  = 1
+	CtxAdminId              = "admin_id"
+	CtxAdminUsername        = "admin_username"
+	CtxAdminIsSuper         = "admin_is_super"
 )
 
 const (

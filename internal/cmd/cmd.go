@@ -35,6 +35,7 @@ var Main = gcmd.Command{
 			group.Bind(
 				backend.Employee.Register,
 				backend.Employee.Login,
+				backend.Admin.Login,
 			)
 			group.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(service.Middleware().EmployeeAuth)
@@ -42,28 +43,59 @@ var Main = gcmd.Command{
 					backend.Employee.Logout,
 					backend.Employee.Info,
 					backend.Employee.UpdatePassword,
-					backend.Employee.ManageCreate,
-					backend.Employee.ManageList,
-					backend.Employee.ManageDetail,
-					backend.Employee.ManageUpdate,
-					backend.Employee.ManageStatus,
-					backend.Employee.ManageResetPassword,
 					backend.Points.Balance,
 					backend.Points.Records,
-					backend.Points.ManageAdd,
-					backend.Points.ManageDeduct,
-					backend.Points.ManageRecords,
-					backend.Category.List,
-					backend.Goods.Create,
-					backend.Goods.List,
-					backend.Goods.Detail,
-					backend.Goods.Update,
-					backend.Goods.Status,
-					backend.Order.List,
-					backend.Order.Detail,
-					backend.Order.Complete,
-					backend.Order.Cancel,
 				)
+			})
+			group.Group("/", func(group *ghttp.RouterGroup) {
+				group.Middleware(service.Middleware().AdminAuth)
+				group.Bind(
+					backend.Admin.Logout,
+					backend.Admin.Info,
+					backend.Admin.UpdatePassword,
+				)
+				group.Group("/", func(group *ghttp.RouterGroup) {
+					group.Middleware(service.Middleware().AdminPermissionAuth)
+					group.Bind(
+						backend.Employee.ManageCreate,
+						backend.Employee.ManageList,
+						backend.Employee.ManageDetail,
+						backend.Employee.ManageUpdate,
+						backend.Employee.ManageStatus,
+						backend.Employee.ManageResetPassword,
+						backend.Points.ManageAdd,
+						backend.Points.ManageDeduct,
+						backend.Points.ManageRecords,
+						backend.Category.List,
+						backend.Goods.Create,
+						backend.Goods.List,
+						backend.Goods.Detail,
+						backend.Goods.Update,
+						backend.Goods.Status,
+						backend.Order.List,
+						backend.Order.Detail,
+						backend.Order.Complete,
+						backend.Order.Cancel,
+						backend.Admin.ManageCreate,
+						backend.Admin.ManageList,
+						backend.Admin.ManageDetail,
+						backend.Admin.ManageUpdate,
+						backend.Admin.ManageStatus,
+						backend.Admin.ManageResetPassword,
+						backend.Admin.ManageRoles,
+						backend.Role.Create,
+						backend.Role.List,
+						backend.Role.Detail,
+						backend.Role.Update,
+						backend.Role.Status,
+						backend.Role.Permissions,
+						backend.Permission.Create,
+						backend.Permission.List,
+						backend.Permission.Detail,
+						backend.Permission.Update,
+						backend.Permission.Status,
+					)
+				})
 			})
 		})
 		s.Group("/frontend", func(group *ghttp.RouterGroup) {

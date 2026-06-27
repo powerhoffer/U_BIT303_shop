@@ -20,6 +20,11 @@ var Main = gcmd.Command{
 	Brief: consts.ProjectBrief,
 	Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 		s := g.Server()
+		uploadPath := g.Cfg().MustGet(ctx, "upload.path").String()
+		uploadPrefix := g.Cfg().MustGet(ctx, "upload.urlPrefix").String()
+		if uploadPath != "" && uploadPrefix != "" {
+			s.AddStaticPath(uploadPrefix, uploadPath)
+		}
 		s.Group("/", func(group *ghttp.RouterGroup) {
 			group.Middleware(
 				service.Middleware().CORS,
@@ -94,6 +99,7 @@ var Main = gcmd.Command{
 						backend.Permission.Detail,
 						backend.Permission.Update,
 						backend.Permission.Status,
+						backend.Upload.GoodsImage,
 					)
 				})
 			})

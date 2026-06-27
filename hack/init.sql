@@ -294,3 +294,29 @@ ON DUPLICATE KEY UPDATE
   group_name = VALUES(group_name),
   status = VALUES(status),
   deleted_at = NULL;
+
+CREATE TABLE IF NOT EXISTS upload_file (
+  id int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Upload file ID',
+  admin_id int unsigned NOT NULL DEFAULT 0 COMMENT 'Upload admin ID',
+  file_name varchar(128) NOT NULL COMMENT 'Saved file name',
+  original_name varchar(255) NOT NULL DEFAULT '' COMMENT 'Original file name',
+  file_path varchar(500) NOT NULL COMMENT 'Local file path',
+  url varchar(500) NOT NULL COMMENT 'Public access URL',
+  file_size bigint unsigned NOT NULL DEFAULT 0 COMMENT 'File size bytes',
+  mime_type varchar(128) NOT NULL DEFAULT '' COMMENT 'MIME type',
+  file_ext varchar(20) NOT NULL DEFAULT '' COMMENT 'File extension',
+  biz_type varchar(64) NOT NULL DEFAULT 'goods' COMMENT 'Business type',
+  created_at datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
+  PRIMARY KEY (id),
+  KEY idx_upload_file_admin_id (admin_id),
+  KEY idx_upload_file_biz_type (biz_type),
+  KEY idx_upload_file_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Upload file record table';
+
+INSERT INTO admin_permission (name, group_name, method, path, status) VALUES
+('Upload goods image', 'Goods Management', 'POST', '/backend/upload/goods-image', 1)
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  group_name = VALUES(group_name),
+  status = VALUES(status),
+  deleted_at = NULL;

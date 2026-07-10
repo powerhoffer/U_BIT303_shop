@@ -409,6 +409,16 @@ func (s *sOrder) ManageList(ctx context.Context, in model.BackendOrderListInput)
 	if in.Status == consts.OrderStatusPending || in.Status == consts.OrderStatusCompleted || in.Status == consts.OrderStatusCancelled {
 		m = m.Where(columns.Status, in.Status)
 	}
+	startTime, endTime, err := parseBackendOrderDateRange(in.StartTime, in.EndTime)
+	if err != nil {
+		return out, err
+	}
+	if startTime != nil {
+		m = m.Where(columns.CreatedAt+" >= ?", startTime)
+	}
+	if endTime != nil {
+		m = m.Where(columns.CreatedAt+" < ?", endTime)
+	}
 	total, err := m.Count()
 	if err != nil {
 		return out, err
@@ -425,6 +435,29 @@ func (s *sOrder) ManageList(ctx context.Context, in model.BackendOrderListInput)
 		out.List = append(out.List, toOrderBase(order))
 	}
 	return out, nil
+}
+
+func parseBackendOrderDateRange(startValue, endValue string) (startTime, endTime *time.Time, err error) {
+	const dateLayout = "2006-01-02"
+	if startValue != "" {
+		start, parseErr := time.ParseInLocation(dateLayout, startValue, time.Local)
+		if parseErr != nil {
+			return nil, nil, errors.New("Start time must use YYYY-MM-DD format")
+		}
+		startTime = &start
+	}
+	if endValue != "" {
+		end, parseErr := time.ParseInLocation(dateLayout, endValue, time.Local)
+		if parseErr != nil {
+			return nil, nil, errors.New("End time must use YYYY-MM-DD format")
+		}
+		end = end.AddDate(0, 0, 1)
+		endTime = &end
+	}
+	if startTime != nil && endTime != nil && !startTime.Before(*endTime) {
+		return nil, nil, errors.New("Start time must not be later than end time")
+	}
+	return startTime, endTime, nil
 }
 
 func (s *sOrder) ManageDetail(ctx context.Context, in model.BackendOrderDetailInput) (out model.BackendOrderDetailOutput, err error) {

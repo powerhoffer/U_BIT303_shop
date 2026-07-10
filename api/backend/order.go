@@ -13,6 +13,8 @@ type OrderListReq struct {
 	EmployeeId uint   `json:"employee_id" in:"query"`
 	OrderNo    string `json:"order_no" in:"query"`
 	Status     int    `json:"status" in:"query" d:"-1"`
+	StartTime  string `json:"start_time" in:"query" description:"Start date in YYYY-MM-DD format"`
+	EndTime    string `json:"end_time" in:"query" description:"End date in YYYY-MM-DD format"`
 }
 
 type OrderListRes struct {

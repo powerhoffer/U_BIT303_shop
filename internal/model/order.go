@@ -76,6 +76,8 @@ type BackendOrderListInput struct {
 	EmployeeId uint
 	OrderNo    string
 	Status     int
+	StartTime  string
+	EndTime    string
 }
 
 type BackendOrderListOutput struct {

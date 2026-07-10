@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"bit303_shop/internal/consts"
@@ -111,10 +112,26 @@ func (s *sOrder) Create(ctx context.Context, in model.OrderCreateInput) (out mod
 			}).Insert(); err != nil {
 				return err
 			}
+			afterStock := goods.Stock - cart.Count
 			if _, err = dao.GoodsInfo.Ctx(ctx).
 				Where(goodsColumns.Id, goods.Id).
-				Data(g.Map{goodsColumns.Stock: goods.Stock - cart.Count}).
+				Data(g.Map{goodsColumns.Stock: afterStock}).
 				Update(); err != nil {
+				return err
+			}
+			if err = service.Stock().RecordChange(ctx, model.StockRecordInput{
+				GoodsId:        goods.Id,
+				GoodsName:      goods.Name,
+				ChangeType:     consts.StockChangeTypeOrderDeduct,
+				ChangeQuantity: -int(cart.Count),
+				BeforeStock:    goods.Stock,
+				AfterStock:     afterStock,
+				BizType:        consts.StockBizTypeOrderCreate,
+				BizId:          uint(orderId),
+				OperatorType:   consts.StockOperatorTypeEmployee,
+				OperatorId:     in.EmployeeId,
+				Remark:         "Order redemption: " + orderNo,
+			}); err != nil {
 				return err
 			}
 		}
@@ -223,24 +240,8 @@ func (s *sOrder) Cancel(ctx context.Context, in model.OrderCancelInput) (out mod
 		if err != nil {
 			return err
 		}
-		goodsColumns := dao.GoodsInfo.Columns()
-		for _, item := range items {
-			var goods entity.GoodsInfo
-			if err = dao.GoodsInfo.Ctx(ctx).
-				Where(goodsColumns.Id, item.GoodsId).
-				WhereNull(goodsColumns.DeletedAt).
-				LockUpdate().
-				Scan(&goods); err != nil && !errors.Is(err, sql.ErrNoRows) {
-				return err
-			}
-			if goods.Id > 0 {
-				if _, err = dao.GoodsInfo.Ctx(ctx).
-					Where(goodsColumns.Id, goods.Id).
-					Data(g.Map{goodsColumns.Stock: goods.Stock + item.Count}).
-					Update(); err != nil {
-					return err
-				}
-			}
+		if err = s.restoreStock(ctx, items, consts.StockBizTypeEmployeeOrderCancel, order.Id, consts.StockOperatorTypeEmployee, in.EmployeeId); err != nil {
+			return err
 		}
 		account, err := s.getPointsAccountForUpdate(ctx, in.EmployeeId)
 		if err != nil {
@@ -508,10 +509,10 @@ func (s *sOrder) ManageCancel(ctx context.Context, in model.BackendOrderCancelIn
 		if err != nil {
 			return err
 		}
-		if err = s.restoreStock(ctx, items); err != nil {
+		if err = s.restoreStock(ctx, items, consts.StockBizTypeAdminOrderCancel, order.Id, consts.StockOperatorTypeAdmin, in.OperatorAdminId); err != nil {
 			return err
 		}
-		if err = s.refundPoints(ctx, order, in.OperatorEmployeeId, "Backend cancel order refund: "+order.OrderNo); err != nil {
+		if err = s.refundPoints(ctx, order, 0, "Backend cancel order refund: "+order.OrderNo); err != nil {
 			return err
 		}
 		if _, err = dao.OrderInfo.Ctx(ctx).
@@ -580,7 +581,7 @@ func (s *sOrder) getOrderItemsByOrderId(ctx context.Context, orderId uint) ([]mo
 	return out, nil
 }
 
-func (s *sOrder) restoreStock(ctx context.Context, items []model.OrderGoodsItem) error {
+func (s *sOrder) restoreStock(ctx context.Context, items []model.OrderGoodsItem, bizType string, bizId uint, operatorType int, operatorId uint) error {
 	goodsColumns := dao.GoodsInfo.Columns()
 	for _, item := range items {
 		var goods entity.GoodsInfo
@@ -591,13 +592,33 @@ func (s *sOrder) restoreStock(ctx context.Context, items []model.OrderGoodsItem)
 			Scan(&goods); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
-		if goods.Id > 0 {
-			if _, err := dao.GoodsInfo.Ctx(ctx).
-				Where(goodsColumns.Id, goods.Id).
-				Data(g.Map{goodsColumns.Stock: goods.Stock + item.Count}).
-				Update(); err != nil {
-				return err
-			}
+		if goods.Id == 0 {
+			continue
+		}
+		if item.Count > uint(math.MaxUint32)-goods.Stock {
+			return errors.New("Stock exceeds limit")
+		}
+		afterStock := goods.Stock + item.Count
+		if _, err := dao.GoodsInfo.Ctx(ctx).
+			Where(goodsColumns.Id, goods.Id).
+			Data(g.Map{goodsColumns.Stock: afterStock}).
+			Update(); err != nil {
+			return err
+		}
+		if err := service.Stock().RecordChange(ctx, model.StockRecordInput{
+			GoodsId:        goods.Id,
+			GoodsName:      goods.Name,
+			ChangeType:     consts.StockChangeTypeOrderCancelRestore,
+			ChangeQuantity: int(item.Count),
+			BeforeStock:    goods.Stock,
+			AfterStock:     afterStock,
+			BizType:        bizType,
+			BizId:          bizId,
+			OperatorType:   operatorType,
+			OperatorId:     operatorId,
+			Remark:         "Cancel order restore stock",
+		}); err != nil {
+			return err
 		}
 	}
 	return nil

@@ -11,5 +11,6 @@ import (
 	_ "bit303_shop/internal/logic/permission"
 	_ "bit303_shop/internal/logic/points"
 	_ "bit303_shop/internal/logic/role"
+	_ "bit303_shop/internal/logic/stock"
 	_ "bit303_shop/internal/logic/upload"
 )

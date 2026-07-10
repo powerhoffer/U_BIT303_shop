@@ -77,6 +77,8 @@ var Main = gcmd.Command{
 						backend.Goods.Detail,
 						backend.Goods.Update,
 						backend.Goods.Status,
+						backend.Stock.Adjust,
+						backend.Stock.Records,
 						backend.Order.List,
 						backend.Order.Detail,
 						backend.Order.Complete,

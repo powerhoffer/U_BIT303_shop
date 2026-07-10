@@ -84,6 +84,43 @@ CREATE TABLE IF NOT EXISTS `goods_info` (
   KEY `idx_goods_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品信息表';
 
+CREATE TABLE IF NOT EXISTS `goods_stock_record` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '库存流水ID',
+  `goods_id` int unsigned NOT NULL COMMENT '商品ID',
+  `goods_name` varchar(128) NOT NULL COMMENT '商品名称快照',
+  `change_type` tinyint NOT NULL COMMENT '变动类型：1初始库存 2后台增加 3后台扣减 4订单扣减 5取消订单恢复',
+  `change_quantity` int NOT NULL COMMENT '库存变动数量，正数增加，负数扣减',
+  `before_stock` int unsigned NOT NULL COMMENT '变动前库存',
+  `after_stock` int unsigned NOT NULL COMMENT '变动后库存',
+  `biz_type` varchar(64) NOT NULL DEFAULT '' COMMENT '业务来源',
+  `biz_id` int unsigned NOT NULL DEFAULT 0 COMMENT '关联业务ID',
+  `operator_type` tinyint NOT NULL DEFAULT 0 COMMENT '操作者类型：0系统 1管理员 2员工',
+  `operator_id` int unsigned NOT NULL DEFAULT 0 COMMENT '操作者ID',
+  `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_stock_record_goods_created` (`goods_id`, `created_at`),
+  KEY `idx_stock_record_change_type` (`change_type`),
+  KEY `idx_stock_record_biz` (`biz_type`, `biz_id`),
+  KEY `idx_stock_record_operator` (`operator_type`, `operator_id`),
+  KEY `idx_stock_record_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品库存变动流水表';
+
+INSERT INTO `goods_stock_record` (
+  `goods_id`, `goods_name`, `change_type`, `change_quantity`, `before_stock`, `after_stock`,
+  `biz_type`, `biz_id`, `operator_type`, `operator_id`, `remark`
+)
+SELECT
+  g.`id`, g.`name`, 1, g.`stock`, 0, g.`stock`, 'initial', g.`id`, 0, 0, 'Initial stock snapshot'
+FROM `goods_info` g
+WHERE g.`deleted_at` IS NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM `goods_stock_record` r
+    WHERE r.`goods_id` = g.`id`
+      AND r.`change_type` = 1
+  );
+
 CREATE TABLE IF NOT EXISTS `cart_info` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '购物车ID',
   `employee_id` int unsigned NOT NULL COMMENT '员工ID',
@@ -267,6 +304,8 @@ INSERT INTO admin_permission (name, group_name, method, path, status) VALUES
 ('Goods detail', 'Goods Management', 'GET', '/backend/goods/detail', 1),
 ('Update goods', 'Goods Management', 'POST', '/backend/goods/update', 1),
 ('Update goods status', 'Goods Management', 'POST', '/backend/goods/status', 1),
+('Adjust goods stock', 'Stock Management', 'POST', '/backend/stock/adjust', 1),
+('Goods stock records', 'Stock Management', 'GET', '/backend/stock/records', 1),
 ('Backend order list', 'Order Management', 'GET', '/backend/order/list', 1),
 ('Backend order detail', 'Order Management', 'GET', '/backend/order/detail', 1),
 ('Complete order', 'Order Management', 'POST', '/backend/order/complete', 1),

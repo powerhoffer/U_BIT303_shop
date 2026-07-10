@@ -1,12 +1,13 @@
 package model
 
 type GoodsCreateInput struct {
-	CategoryId  uint
-	Name        string
-	ImageUrl    string
-	PointsPrice uint
-	Stock       uint
-	Description string
+	OperatorAdminId uint
+	CategoryId      uint
+	Name            string
+	ImageUrl        string
+	PointsPrice     uint
+	Stock           uint
+	Description     string
 }
 
 type GoodsCreateOutput struct {
@@ -33,13 +34,14 @@ type GoodsDetailOutput struct {
 }
 
 type GoodsUpdateInput struct {
-	Id          uint
-	CategoryId  uint
-	Name        string
-	ImageUrl    string
-	PointsPrice uint
-	Stock       uint
-	Description string
+	OperatorAdminId uint
+	Id              uint
+	CategoryId      uint
+	Name            string
+	ImageUrl        string
+	PointsPrice     uint
+	Stock           uint
+	Description     string
 }
 
 type GoodsUpdateOutput struct {

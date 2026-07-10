@@ -49,8 +49,8 @@ func (c *cOrder) Complete(ctx context.Context, req *backendApi.OrderCompleteReq)
 
 func (c *cOrder) Cancel(ctx context.Context, req *backendApi.OrderCancelReq) (res *backendApi.OrderCancelRes, err error) {
 	out, err := service.Order().ManageCancel(ctx, model.BackendOrderCancelInput{
-		Id:                 req.Id,
-		OperatorEmployeeId: currentEmployeeId(ctx),
+		Id:              req.Id,
+		OperatorAdminId: currentAdminId(ctx),
 	})
 	if err != nil {
 		return nil, err

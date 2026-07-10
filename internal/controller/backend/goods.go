@@ -19,6 +19,7 @@ func (c *cGoods) Create(ctx context.Context, req *backend.GoodsCreateReq) (res *
 	if err = gconv.Struct(req, &input); err != nil {
 		return nil, err
 	}
+	input.OperatorAdminId = currentAdminId(ctx)
 	out, err := service.Goods().Create(ctx, input)
 	if err != nil {
 		return nil, err
@@ -56,6 +57,7 @@ func (c *cGoods) Update(ctx context.Context, req *backend.GoodsUpdateReq) (res *
 	if err = gconv.Struct(req, &input); err != nil {
 		return nil, err
 	}
+	input.OperatorAdminId = currentAdminId(ctx)
 	out, err := service.Goods().Update(ctx, input)
 	if err != nil {
 		return nil, err

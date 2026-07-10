@@ -104,8 +104,8 @@ type BackendOrderCompleteOutput struct {
 }
 
 type BackendOrderCancelInput struct {
-	Id                 uint
-	OperatorEmployeeId uint
+	Id              uint
+	OperatorAdminId uint
 }
 
 type BackendOrderCancelOutput struct {

@@ -12,6 +12,7 @@ import (
 	"bit303_shop/internal/model/entity"
 	"bit303_shop/internal/service"
 
+	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -29,20 +30,35 @@ func (s *sGoods) Create(ctx context.Context, in model.GoodsCreateInput) (out mod
 	if err = s.checkCategory(ctx, in.CategoryId); err != nil {
 		return out, err
 	}
-	lastInsertId, err := dao.GoodsInfo.Ctx(ctx).Data(do.GoodsInfo{
-		CategoryId:  in.CategoryId,
-		Name:        in.Name,
-		ImageUrl:    in.ImageUrl,
-		PointsPrice: in.PointsPrice,
-		Stock:       in.Stock,
-		Description: in.Description,
-		Status:      consts.GoodsStatusOnShelf,
-	}).InsertAndGetId()
-	if err != nil {
-		return out, err
-	}
-	out.Id = uint(lastInsertId)
-	return out, nil
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		lastInsertId, insertErr := dao.GoodsInfo.Ctx(ctx).Data(do.GoodsInfo{
+			CategoryId:  in.CategoryId,
+			Name:        in.Name,
+			ImageUrl:    in.ImageUrl,
+			PointsPrice: in.PointsPrice,
+			Stock:       in.Stock,
+			Description: in.Description,
+			Status:      consts.GoodsStatusOnShelf,
+		}).InsertAndGetId()
+		if insertErr != nil {
+			return insertErr
+		}
+		out.Id = uint(lastInsertId)
+		return service.Stock().RecordChange(ctx, model.StockRecordInput{
+			GoodsId:        out.Id,
+			GoodsName:      in.Name,
+			ChangeType:     consts.StockChangeTypeInitial,
+			ChangeQuantity: int(in.Stock),
+			BeforeStock:    0,
+			AfterStock:     in.Stock,
+			BizType:        consts.StockBizTypeGoodsCreate,
+			BizId:          out.Id,
+			OperatorType:   consts.StockOperatorTypeAdmin,
+			OperatorId:     in.OperatorAdminId,
+			Remark:         "Initial stock from goods creation",
+		})
+	})
+	return out, err
 }
 
 func (s *sGoods) List(ctx context.Context, in model.GoodsListInput) (out model.GoodsListOutput, err error) {
@@ -108,27 +124,58 @@ func (s *sGoods) Detail(ctx context.Context, id uint) (out model.GoodsDetailOutp
 }
 
 func (s *sGoods) Update(ctx context.Context, in model.GoodsUpdateInput) (out model.GoodsUpdateOutput, err error) {
-	goods, err := s.getGoodsById(ctx, in.Id)
-	if err != nil {
-		return out, err
-	}
-	if goods.Id == 0 {
-		return out, errors.New("Goods does not exist")
-	}
 	if err = s.checkCategory(ctx, in.CategoryId); err != nil {
 		return out, err
 	}
-	_, err = dao.GoodsInfo.Ctx(ctx).
-		Where(dao.GoodsInfo.Columns().Id, in.Id).
-		Data(g.Map{
-			dao.GoodsInfo.Columns().CategoryId:  in.CategoryId,
-			dao.GoodsInfo.Columns().Name:        in.Name,
-			dao.GoodsInfo.Columns().ImageUrl:    in.ImageUrl,
-			dao.GoodsInfo.Columns().PointsPrice: in.PointsPrice,
-			dao.GoodsInfo.Columns().Stock:       in.Stock,
-			dao.GoodsInfo.Columns().Description: in.Description,
-		}).
-		Update()
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		columns := dao.GoodsInfo.Columns()
+		var goods entity.GoodsInfo
+		if queryErr := dao.GoodsInfo.Ctx(ctx).
+			Where(columns.Id, in.Id).
+			WhereNull(columns.DeletedAt).
+			LockUpdate().
+			Scan(&goods); queryErr != nil && !errors.Is(queryErr, sql.ErrNoRows) {
+			return queryErr
+		}
+		if goods.Id == 0 {
+			return errors.New("Goods does not exist")
+		}
+		if _, updateErr := dao.GoodsInfo.Ctx(ctx).
+			Where(columns.Id, in.Id).
+			Data(g.Map{
+				columns.CategoryId:  in.CategoryId,
+				columns.Name:        in.Name,
+				columns.ImageUrl:    in.ImageUrl,
+				columns.PointsPrice: in.PointsPrice,
+				columns.Stock:       in.Stock,
+				columns.Description: in.Description,
+			}).
+			Update(); updateErr != nil {
+			return updateErr
+		}
+		if goods.Stock == in.Stock {
+			return nil
+		}
+		changeType := consts.StockChangeTypeAdminDecrease
+		changeQuantity := -int(goods.Stock - in.Stock)
+		if in.Stock > goods.Stock {
+			changeType = consts.StockChangeTypeAdminIncrease
+			changeQuantity = int(in.Stock - goods.Stock)
+		}
+		return service.Stock().RecordChange(ctx, model.StockRecordInput{
+			GoodsId:        goods.Id,
+			GoodsName:      in.Name,
+			ChangeType:     changeType,
+			ChangeQuantity: changeQuantity,
+			BeforeStock:    goods.Stock,
+			AfterStock:     in.Stock,
+			BizType:        consts.StockBizTypeGoodsUpdate,
+			BizId:          goods.Id,
+			OperatorType:   consts.StockOperatorTypeAdmin,
+			OperatorId:     in.OperatorAdminId,
+			Remark:         "Stock changed through goods update",
+		})
+	})
 	if err != nil {
 		return out, err
 	}

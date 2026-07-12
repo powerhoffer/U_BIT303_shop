@@ -295,6 +295,7 @@ INSERT INTO admin_permission (name, group_name, method, path, status) VALUES
 ('Update employee', 'Employee Management', 'POST', '/backend/employee/manage/update', 1),
 ('Update employee status', 'Employee Management', 'POST', '/backend/employee/manage/status', 1),
 ('Reset employee password', 'Employee Management', 'POST', '/backend/employee/manage/reset-password', 1),
+('Delete employee', 'Employee Management', 'POST', '/backend/employee/manage/delete', 1),
 ('Add employee credits', 'Credit Management', 'POST', '/backend/points/manage/add', 1),
 ('Deduct employee credits', 'Credit Management', 'POST', '/backend/points/manage/deduct', 1),
 ('Employee credit records', 'Credit Management', 'GET', '/backend/points/manage/records', 1),

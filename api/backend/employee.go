@@ -128,6 +128,15 @@ type EmployeeManageResetPasswordRes struct {
 	Message string `json:"message"`
 }
 
+type EmployeeManageDeleteReq struct {
+	g.Meta `path:"/employee/manage/delete" method:"post" tags:"Backend Employees" summary:"Delete employee"`
+	Id     uint `json:"id" v:"required|min:1#Employee ID is required|Employee ID is invalid"`
+}
+
+type EmployeeManageDeleteRes struct {
+	Message string `json:"message"`
+}
+
 type EmployeeBase struct {
 	Id       uint   `json:"id"`
 	Username string `json:"username"`

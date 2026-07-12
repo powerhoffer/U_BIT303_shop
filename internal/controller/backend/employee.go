@@ -138,6 +138,13 @@ func (c *cEmployee) ManageResetPassword(ctx context.Context, req *backendApi.Emp
 	return &backendApi.EmployeeManageResetPasswordRes{Message: "Password reset successfully"}, nil
 }
 
+func (c *cEmployee) ManageDelete(ctx context.Context, req *backendApi.EmployeeManageDeleteReq) (res *backendApi.EmployeeManageDeleteRes, err error) {
+	if err = service.Employee().ManageDelete(ctx, model.EmployeeManageDeleteInput{Id: req.Id}); err != nil {
+		return nil, err
+	}
+	return &backendApi.EmployeeManageDeleteRes{Message: "Employee deleted successfully"}, nil
+}
+
 func toApiEmployees(in []model.EmployeeBase) []backendApi.EmployeeBase {
 	list := make([]backendApi.EmployeeBase, 0, len(in))
 	for _, item := range in {

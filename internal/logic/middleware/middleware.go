@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"database/sql"
+	"errors"
 	"strings"
 
 	"bit303_shop/internal/consts"
@@ -75,7 +77,7 @@ func (s *sMiddleware) EmployeeAuth(r *ghttp.Request) {
 		Where(columns.Id, claims.EmployeeId).
 		WhereNull(columns.DeletedAt).
 		Scan(&employee)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		response.JsonExit(r, 500, "Failed to query employee info")
 		return
 	}

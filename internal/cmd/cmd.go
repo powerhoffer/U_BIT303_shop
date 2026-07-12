@@ -68,6 +68,7 @@ var Main = gcmd.Command{
 						backend.Employee.ManageUpdate,
 						backend.Employee.ManageStatus,
 						backend.Employee.ManageResetPassword,
+						backend.Employee.ManageDelete,
 						backend.Points.ManageAdd,
 						backend.Points.ManageDeduct,
 						backend.Points.ManageRecords,

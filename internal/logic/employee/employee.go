@@ -13,6 +13,7 @@ import (
 	"bit303_shop/internal/service"
 	"bit303_shop/utility"
 
+	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"golang.org/x/crypto/bcrypt"
@@ -30,9 +31,8 @@ func New() *sEmployee {
 
 func (s *sEmployee) Register(ctx context.Context, in model.EmployeeRegisterInput) (out model.EmployeeRegisterOutput, err error) {
 	columns := dao.EmployeeInfo.Columns()
-	count, err := dao.EmployeeInfo.Ctx(ctx).
+	count, err := dao.EmployeeInfo.Ctx(ctx).Unscoped().
 		Where(columns.Username, in.Username).
-		WhereNull(columns.DeletedAt).
 		Count()
 	if err != nil {
 		return out, err
@@ -276,6 +276,59 @@ func (s *sEmployee) ManageResetPassword(ctx context.Context, in model.EmployeeMa
 	return err
 }
 
+func (s *sEmployee) ManageDelete(ctx context.Context, in model.EmployeeManageDeleteInput) error {
+	return g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		columns := dao.EmployeeInfo.Columns()
+		var employee entity.EmployeeInfo
+		if err := dao.EmployeeInfo.Ctx(ctx).
+			Where(columns.Id, in.Id).
+			WhereNull(columns.DeletedAt).
+			LockUpdate().
+			Scan(&employee); err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+		if employee.Id == 0 {
+			return errors.New("Employee account does not exist")
+		}
+		if employee.Username == "root" {
+			return errors.New("Root employee account cannot be deleted")
+		}
+
+		now := gtime.Now()
+		if _, err := dao.EmployeeInfo.Ctx(ctx).
+			Where(columns.Id, employee.Id).
+			Data(g.Map{
+				columns.Status:    consts.EmployeeStatusDisabled,
+				columns.DeletedAt: now,
+			}).
+			Update(); err != nil {
+			return err
+		}
+
+		accountColumns := dao.EmployeePointsAccount.Columns()
+		if _, err := dao.EmployeePointsAccount.Ctx(ctx).
+			Where(accountColumns.EmployeeId, employee.Id).
+			WhereNull(accountColumns.DeletedAt).
+			Data(g.Map{
+				accountColumns.Status:    consts.PointsAccountStatusDisabled,
+				accountColumns.DeletedAt: now,
+			}).
+			Update(); err != nil {
+			return err
+		}
+
+		cartColumns := dao.CartInfo.Columns()
+		if _, err := dao.CartInfo.Ctx(ctx).
+			Where(cartColumns.EmployeeId, employee.Id).
+			WhereNull(cartColumns.DeletedAt).
+			Data(g.Map{cartColumns.DeletedAt: now}).
+			Update(); err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
 func (s *sEmployee) getNormalEmployeeByUsername(ctx context.Context, username string) (employee entity.EmployeeInfo, err error) {
 	columns := dao.EmployeeInfo.Columns()
 	err = dao.EmployeeInfo.Ctx(ctx).
@@ -291,6 +344,9 @@ func (s *sEmployee) getEmployeeById(ctx context.Context, employeeId uint) (emplo
 		Where(columns.Id, employeeId).
 		WhereNull(columns.DeletedAt).
 		Scan(&employee)
+	if errors.Is(err, sql.ErrNoRows) {
+		err = nil
+	}
 	return
 }
 

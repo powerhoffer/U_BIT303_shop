@@ -88,6 +88,10 @@ type EmployeeManageResetPasswordInput struct {
 	Password string
 }
 
+type EmployeeManageDeleteInput struct {
+	Id uint
+}
+
 type EmployeeBase struct {
 	Id       uint
 	Username string

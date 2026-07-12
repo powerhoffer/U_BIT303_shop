@@ -22,6 +22,7 @@ type (
 		ManageUpdate(ctx context.Context, in model.EmployeeManageUpdateInput) (out model.EmployeeManageUpdateOutput, err error)
 		ManageUpdateStatus(ctx context.Context, in model.EmployeeManageStatusInput) error
 		ManageResetPassword(ctx context.Context, in model.EmployeeManageResetPasswordInput) error
+		ManageDelete(ctx context.Context, in model.EmployeeManageDeleteInput) error
 	}
 )
 

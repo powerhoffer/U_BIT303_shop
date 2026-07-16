@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/employee'
+import { login, logout, getInfo } from '@/api/admin'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -9,7 +9,9 @@ const state = {
   name: '',
   avatar: defaultAvatar,
   introduction: '',
-  roles: []
+  roles: [],
+  isSuper: 0,
+  roleIds: []
 }
 
 const mutations = {
@@ -27,6 +29,12 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_IS_SUPER: (state, isSuper) => {
+    state.isSuper = isSuper
+  },
+  SET_ROLE_IDS: (state, roleIds) => {
+    state.roleIds = roleIds
   }
 }
 
@@ -39,27 +47,31 @@ const actions = {
       remember
     }).then(response => {
       const token = response.data.token
-      const employee = response.data.employee || {}
+      const admin = response.data.admin || {}
       commit('SET_TOKEN', token)
-      commit('SET_NAME', employee.real_name || employee.username || 'Employee')
+      commit('SET_NAME', admin.real_name || admin.username || 'Administrator')
       commit('SET_AVATAR', defaultAvatar)
+      commit('SET_IS_SUPER', admin.is_super || 0)
+      commit('SET_ROLE_IDS', admin.role_ids || [])
       setToken(token)
-      localStorage.setItem('employee', JSON.stringify(employee))
+      localStorage.setItem('admin', JSON.stringify(admin))
       return response
     })
   },
 
   getInfo({ commit }) {
     return getInfo().then(response => {
-      const employee = response.data.employee || {}
-      const name = employee.real_name || employee.username || 'Employee'
+      const admin = response.data.admin || {}
+      const name = admin.real_name || admin.username || 'Administrator'
       const roles = ['*']
       commit('SET_NAME', name)
       commit('SET_AVATAR', defaultAvatar)
-      commit('SET_INTRODUCTION', 'YUTANK employee')
+      commit('SET_INTRODUCTION', admin.is_super === 1 ? 'Super administrator' : 'Administrator')
       commit('SET_ROLES', roles)
-      localStorage.setItem('employee', JSON.stringify(employee))
-      return { roles, name, employee }
+      commit('SET_IS_SUPER', admin.is_super || 0)
+      commit('SET_ROLE_IDS', admin.role_ids || [])
+      localStorage.setItem('admin', JSON.stringify(admin))
+      return { roles, name, admin }
     })
   },
 
@@ -67,9 +79,11 @@ const actions = {
     return logout().catch(() => {}).finally(() => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_IS_SUPER', 0)
+      commit('SET_ROLE_IDS', [])
       removeToken()
       resetRouter()
-      localStorage.removeItem('employee')
+      localStorage.removeItem('admin')
       dispatch('tagsView/delAllViews', null, { root: true })
     })
   },
@@ -77,8 +91,10 @@ const actions = {
   resetToken({ commit }) {
     commit('SET_TOKEN', '')
     commit('SET_ROLES', [])
+    commit('SET_IS_SUPER', 0)
+    commit('SET_ROLE_IDS', [])
     removeToken()
-    localStorage.removeItem('employee')
+    localStorage.removeItem('admin')
   }
 }
 

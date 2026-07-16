@@ -11,7 +11,7 @@
         <p class="description">{{ goods.description || 'No description available.' }}</p>
         <div class="price-row">
           <span>Price</span>
-          <strong>{{ goods.points_price }} pts</strong>
+          <strong>{{ goods.points_price }} Credits</strong>
         </div>
         <div class="stock-row">Stock {{ goods.stock }}</div>
         <div class="actions">

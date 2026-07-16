@@ -103,6 +103,18 @@
         </el-form-item>
         <el-form-item label="Image URL" prop="image_url">
           <el-input v-model.trim="form.image_url" maxlength="255" show-word-limit />
+          <div class="image-tools">
+            <el-upload
+              action="#"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              :show-file-list="false"
+              :http-request="handleImageUpload"
+              :before-upload="beforeImageUpload"
+            >
+              <el-button size="mini" icon="el-icon-upload" :loading="uploadLoading">Upload Image</el-button>
+            </el-upload>
+            <el-image v-if="form.image_url" class="form-image-preview" :src="form.image_url" fit="cover" />
+          </div>
         </el-form-item>
         <el-form-item label="Credits Price" prop="points_price">
           <el-input-number v-model="form.points_price" :min="1" :precision="0" />
@@ -161,6 +173,7 @@
 
 <script>
 import { categoryList } from '@/api/category'
+import { uploadGoodsImage } from '@/api/upload'
 import {
   goodsList,
   goodsDetail,
@@ -185,6 +198,7 @@ export default {
     return {
       loading: false,
       submitLoading: false,
+      uploadLoading: false,
       list: [],
       total: 0,
       page: 1,
@@ -251,6 +265,30 @@ export default {
       this.size = val
       this.page = 1
       this.getList()
+    },
+    beforeImageUpload(file) {
+      if (!file.type.startsWith('image/')) {
+        this.$message.error('Please select an image file')
+        return false
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        this.$message.error('Image size must not exceed 5 MB')
+        return false
+      }
+      return true
+    },
+    async handleImageUpload(options) {
+      this.uploadLoading = true
+      try {
+        const res = await uploadGoodsImage(options.file)
+        this.form.image_url = res.data.url
+        this.$message.success('Image uploaded successfully')
+        if (options.onSuccess) options.onSuccess(res)
+      } catch (error) {
+        if (options.onError) options.onError(error)
+      } finally {
+        this.uploadLoading = false
+      }
     },
     openCreate() {
       this.isEdit = false
@@ -333,6 +371,18 @@ export default {
 .image-empty {
   color: #909399;
   font-size: 12px;
+}
+.image-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.form-image-preview {
+  width: 56px;
+  height: 56px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
 }
 .detail-list {
   border: 1px solid #ebeef5;

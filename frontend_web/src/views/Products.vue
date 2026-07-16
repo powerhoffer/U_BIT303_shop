@@ -25,7 +25,7 @@
           <h2>{{ item.name }}</h2>
           <p>{{ item.category_name || 'General' }}</p>
           <div class="product-meta">
-            <span class="points">{{ item.points_price }} pts</span>
+            <span class="points">{{ item.points_price }} Credits</span>
             <span class="muted">Stock {{ item.stock }}</span>
           </div>
         </div>

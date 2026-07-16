@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { updatePassword } from '@/api/employee'
+import { updatePassword } from '@/api/admin'
 
 export default {
   name: 'ProfilePassword',

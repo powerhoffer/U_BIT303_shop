@@ -3,15 +3,15 @@
     <h1 class="page-title">My Credits</h1>
     <div class="credit-summary">
       <span>Available Credits</span>
-      <strong>{{ balance }} pts</strong>
+      <strong>{{ balance }} Credits</strong>
     </div>
     <div class="panel">
       <el-table v-loading="loading" :data="records" border>
         <el-table-column label="Type" width="120">
           <template slot-scope="{ row }">{{ row.change_type === 1 ? 'Credit' : 'Debit' }}</template>
         </el-table-column>
-        <el-table-column label="Points" width="120">
-          <template slot-scope="{ row }"><span class="points">{{ row.points }} pts</span></template>
+        <el-table-column label="Credits" width="120">
+          <template slot-scope="{ row }"><span class="points">{{ row.points }} Credits</span></template>
         </el-table-column>
         <el-table-column label="Before" prop="before_balance" width="120" />
         <el-table-column label="After" prop="after_balance" width="120" />

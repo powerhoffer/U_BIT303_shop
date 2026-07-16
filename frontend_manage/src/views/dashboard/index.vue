@@ -3,20 +3,20 @@
     <el-row :gutter="16">
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-title">Current Employee</div>
-          <div class="stat-value">{{ employeeName }}</div>
+          <div class="stat-title">Current Admin</div>
+          <div class="stat-value">{{ adminName }}</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
-          <div class="stat-title">My Credits</div>
-          <div class="stat-value">{{ balance }}</div>
+          <div class="stat-title">Account Type</div>
+          <div class="stat-value">{{ isSuper === 1 ? 'Super Admin' : 'Administrator' }}</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="never" class="stat-card">
           <div class="stat-title">Management Modules</div>
-          <div class="stat-value">3</div>
+          <div class="stat-value">8</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
@@ -32,34 +32,20 @@
       <el-button type="primary" icon="el-icon-user" @click="$router.push('/employee/list')">Employees</el-button>
       <el-button type="success" icon="el-icon-coin" @click="$router.push('/points/manage')">Credit Operations</el-button>
       <el-button type="warning" icon="el-icon-menu" @click="$router.push('/category/list')">Categories</el-button>
+      <el-button icon="el-icon-box" @click="$router.push('/stock/list')">Stock</el-button>
     </el-card>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { pointsBalance } from '@/api/points'
 
 export default {
   name: 'Dashboard',
-  data() {
-    return {
-      balance: 0
-    }
-  },
   computed: {
-    ...mapGetters(['name']),
-    employeeName() {
-      return this.name || 'Employee'
-    }
-  },
-  created() {
-    this.loadBalance()
-  },
-  methods: {
-    async loadBalance() {
-      const res = await pointsBalance()
-      this.balance = res.data.balance || 0
+    ...mapGetters(['name', 'isSuper']),
+    adminName() {
+      return this.name || 'Administrator'
     }
   }
 }

@@ -12,6 +12,7 @@
         </el-form-item>
         <el-checkbox v-model="form.remember">Remember me</el-checkbox>
         <el-button class="login-button" type="primary" :loading="loading" @click="submit">Login</el-button>
+        <div class="register-link">New to YUTANK Shop? <router-link to="/register">Create an account</router-link></div>
       </el-form>
     </div>
   </div>
@@ -36,6 +37,9 @@ export default {
         password: [{ required: true, message: 'Password is required', trigger: 'blur' }]
       }
     }
+  },
+  created() {
+    if (this.$route.query.username) this.form.username = this.$route.query.username
   },
   methods: {
     submit() {
@@ -87,5 +91,16 @@ export default {
 .login-button {
   width: 100%;
   margin-top: 24px;
+}
+
+.register-link {
+  margin-top: 18px;
+  text-align: center;
+  color: #7b8794;
+}
+
+.register-link a {
+  color: #2563eb;
+  font-weight: 600;
 }
 </style>

@@ -9,9 +9,15 @@
         <router-link to="/credits">My Credits</router-link>
       </nav>
       <div class="user-actions">
-        <span v-if="user" class="user-name">{{ user.real_name || user.username }}</span>
-        <el-button v-if="user" size="small" @click="handleLogout">Logout</el-button>
-        <el-button v-else size="small" type="primary" @click="$router.push('/login')">Login</el-button>
+        <template v-if="user">
+          <span class="user-name">{{ user.real_name || user.username }}</span>
+          <el-button size="small" icon="el-icon-lock" @click="$router.push('/profile/password')">Account Security</el-button>
+          <el-button size="small" @click="handleLogout">Logout</el-button>
+        </template>
+        <template v-else>
+          <el-button size="small" @click="$router.push('/register')">Register</el-button>
+          <el-button size="small" type="primary" @click="$router.push('/login')">Login</el-button>
+        </template>
       </div>
     </header>
     <main class="site-main">

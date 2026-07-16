@@ -1,39 +1,16 @@
 import request from '@/utils/request'
 import { query } from './query'
 
-export function login(data) {
+export function employeeList(params) {
   return request({
-    url: '/backend/employee/login',
-    method: 'post',
-    data
-  })
-}
-
-export function logout() {
-  return request({
-    url: '/backend/employee/logout',
-    method: 'post'
-  })
-}
-
-export function getInfo() {
-  return request({
-    url: '/backend/employee/info',
+    url: `/backend/employee/manage/list?${query(params)}`,
     method: 'get'
   })
 }
 
-export function updatePassword(data) {
+export function employeeDetail(params) {
   return request({
-    url: '/backend/employee/password',
-    method: 'post',
-    data
-  })
-}
-
-export function employeeList(params) {
-  return request({
-    url: `/backend/employee/manage/list?${query(params)}`,
+    url: `/backend/employee/manage/detail?${query(params)}`,
     method: 'get'
   })
 }
@@ -65,6 +42,14 @@ export function employeeStatus(data) {
 export function employeeResetPassword(data) {
   return request({
     url: '/backend/employee/manage/reset-password',
+    method: 'post',
+    data
+  })
+}
+
+export function employeeDelete(data) {
+  return request({
+    url: '/backend/employee/manage/delete',
     method: 'post',
     data
   })

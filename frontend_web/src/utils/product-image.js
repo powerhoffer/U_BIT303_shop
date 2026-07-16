@@ -1,19 +1,17 @@
-import redBullImage from '@/assets/products/red-bull.png'
-import cocaColaImage from '@/assets/products/coca-cola.png'
-
-const samples = [
-  redBullImage,
-  cocaColaImage
-]
+const apiBaseUrl = (process.env.VUE_APP_BASE_API || 'http://127.0.0.1:8000').replace(/\/$/, '')
 
 export function productImage(goods) {
-  if (goods && goods.image_url) {
-    return goods.image_url
+  const imageUrl = goods && goods.image_url ? goods.image_url.trim() : ''
+  if (!imageUrl) {
+    return ''
   }
-  const id = goods && goods.id ? Number(goods.id) : 1
-  return samples[Math.abs(id - 1) % samples.length]
+  if (/^(https?:)?\/\//i.test(imageUrl) || imageUrl.startsWith('data:')) {
+    return imageUrl
+  }
+  return `${apiBaseUrl}/${imageUrl.replace(/^\/+/, '')}`
 }
 
-export function imageError(event, goods) {
-  event.target.src = productImage({ id: goods && goods.id ? goods.id + 1 : 2 })
+export function imageError(event) {
+  event.target.onerror = null
+  event.target.style.visibility = 'hidden'
 }

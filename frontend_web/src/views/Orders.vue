@@ -5,7 +5,7 @@
       <el-table v-loading="loading" :data="orders" border>
         <el-table-column label="Order No." prop="order_no" min-width="190" />
         <el-table-column label="Total" width="130">
-          <template slot-scope="{ row }"><span class="points">{{ row.total_points }} pts</span></template>
+          <template slot-scope="{ row }"><span class="points">{{ row.total_points }} Credits</span></template>
         </el-table-column>
         <el-table-column label="Status" width="130">
           <template slot-scope="{ row }">

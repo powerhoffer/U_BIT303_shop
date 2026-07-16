@@ -15,7 +15,7 @@
           </template>
         </el-table-column>
         <el-table-column label="Price" width="120">
-          <template slot-scope="{ row }"><span class="points">{{ row.points_price }} pts</span></template>
+          <template slot-scope="{ row }"><span class="points">{{ row.points_price }} Credits</span></template>
         </el-table-column>
         <el-table-column label="Stock" prop="stock" width="100" />
         <el-table-column label="Quantity" width="170">
@@ -24,7 +24,7 @@
           </template>
         </el-table-column>
         <el-table-column label="Subtotal" width="130">
-          <template slot-scope="{ row }"><span class="points">{{ row.total_points }} pts</span></template>
+          <template slot-scope="{ row }"><span class="points">{{ row.total_points }} Credits</span></template>
         </el-table-column>
         <el-table-column label="Actions" width="120">
           <template slot-scope="{ row }">
@@ -34,7 +34,7 @@
       </el-table>
 
       <div class="cart-footer">
-        <div class="total">Total <strong>{{ totalPoints }} pts</strong></div>
+        <div class="total">Total <strong>{{ totalPoints }} Credits</strong></div>
         <el-button type="primary" :disabled="items.length === 0" :loading="checkoutLoading" @click="checkout">Redeem</el-button>
       </div>
     </div>

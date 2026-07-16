@@ -12,7 +12,7 @@
         <el-input
           ref="username"
           v-model.trim="loginForm.username"
-          placeholder="Employee username"
+          placeholder="Admin username"
           name="username"
           type="text"
           autocomplete="on"
@@ -56,7 +56,7 @@ export default {
         remember: false
       },
       loginRules: {
-        username: [{ required: true, message: 'Please enter employee username', trigger: 'blur' }],
+        username: [{ required: true, message: 'Please enter admin username', trigger: 'blur' }],
         password: [{ required: true, message: 'Please enter password', trigger: 'blur' }]
       },
       passwordType: 'password',

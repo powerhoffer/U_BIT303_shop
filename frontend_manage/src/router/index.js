@@ -60,15 +60,9 @@ export const asyncRoutes = [
   {
     path: '/points',
     component: Layout,
-    redirect: '/points/my',
+    redirect: '/points/manage',
     meta: { title: 'Credits', icon: 'money' },
     children: [
-      {
-        path: 'my',
-        component: () => import('@/views/points/MyPoints'),
-        name: 'MyPoints',
-        meta: { title: 'My Credits', icon: 'money' }
-      },
       {
         path: 'manage',
         component: () => import('@/views/points/ManagePoints'),
@@ -116,6 +110,46 @@ export const asyncRoutes = [
         component: () => import('@/views/order/index'),
         name: 'OrderList',
         meta: { title: 'Order Management', icon: 'clipboard' }
+      }
+    ]
+  },
+  {
+    path: '/stock',
+    component: Layout,
+    redirect: '/stock/list',
+    meta: { title: 'Stock', icon: 'table' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/stock/index'),
+        name: 'StockList',
+        meta: { title: 'Stock Management', icon: 'table' }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/admin/list',
+    meta: { title: 'Access Control', icon: 'lock' },
+    children: [
+      {
+        path: 'admin/list',
+        component: () => import('@/views/system/admin/index'),
+        name: 'AdminList',
+        meta: { title: 'Admins', icon: 'user' }
+      },
+      {
+        path: 'role/list',
+        component: () => import('@/views/system/role/index'),
+        name: 'RoleList',
+        meta: { title: 'Roles', icon: 'peoples' }
+      },
+      {
+        path: 'permission/list',
+        component: () => import('@/views/system/permission/index'),
+        name: 'PermissionList',
+        meta: { title: 'Permissions', icon: 'lock' }
       }
     ]
   },

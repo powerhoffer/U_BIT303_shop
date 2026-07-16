@@ -15,6 +15,17 @@
             <el-option label="Cancelled" :value="3" />
           </el-select>
         </el-form-item>
+        <el-form-item label="Created Date">
+          <el-date-picker
+            v-model="queryForm.dateRange"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            range-separator="to"
+            clearable
+          />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset">Reset</el-button>
@@ -178,7 +189,8 @@ export default {
       queryForm: {
         order_no: '',
         employee_id: '',
-        status: ''
+        status: '',
+        dateRange: []
       },
       detailVisible: false,
       detail: {}
@@ -202,7 +214,9 @@ export default {
           size: this.size,
           order_no: this.queryForm.order_no,
           employee_id: this.queryForm.employee_id,
-          status: this.queryForm.status === '' ? -1 : this.queryForm.status
+          status: this.queryForm.status === '' ? -1 : this.queryForm.status,
+          start_time: this.queryForm.dateRange && this.queryForm.dateRange[0],
+          end_time: this.queryForm.dateRange && this.queryForm.dateRange[1]
         }
         const res = await orderList(params)
         this.list = res.data.list || []
@@ -216,7 +230,7 @@ export default {
       this.getList()
     },
     handleReset() {
-      this.queryForm = { order_no: '', employee_id: '', status: '' }
+      this.queryForm = { order_no: '', employee_id: '', status: '', dateRange: [] }
       this.page = 1
       this.getList()
     },

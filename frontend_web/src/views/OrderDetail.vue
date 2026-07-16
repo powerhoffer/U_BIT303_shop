@@ -13,7 +13,7 @@
       </div>
       <div class="summary-row">
         <span>Total</span>
-        <strong>{{ order.total_points }} pts</strong>
+        <strong>{{ order.total_points }} Credits</strong>
       </div>
       <el-table :data="order.items || []" border>
         <el-table-column label="Product" min-width="260">
@@ -25,11 +25,11 @@
           </template>
         </el-table-column>
         <el-table-column label="Price" width="120">
-          <template slot-scope="{ row }">{{ row.points_price }} pts</template>
+          <template slot-scope="{ row }">{{ row.points_price }} Credits</template>
         </el-table-column>
         <el-table-column label="Quantity" prop="count" width="110" />
         <el-table-column label="Subtotal" width="130">
-          <template slot-scope="{ row }"><span class="points">{{ row.total_points }} pts</span></template>
+          <template slot-scope="{ row }"><span class="points">{{ row.total_points }} Credits</span></template>
         </el-table-column>
       </el-table>
       <div v-if="order.status === 1" class="detail-actions">

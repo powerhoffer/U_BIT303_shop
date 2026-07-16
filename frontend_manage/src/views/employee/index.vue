@@ -39,13 +39,15 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Actions" width="280" fixed="right">
+        <el-table-column align="center" label="Actions" width="410" fixed="right">
           <template slot-scope="scope">
+            <el-button size="mini" icon="el-icon-view" @click="openDetail(scope.row)">Detail</el-button>
             <el-button size="mini" icon="el-icon-edit" @click="openEdit(scope.row)">Edit</el-button>
             <el-button size="mini" :type="scope.row.status === 1 ? 'warning' : 'success'" @click="toggleStatus(scope.row)">
               {{ scope.row.status === 1 ? 'Disable' : 'Enable' }}
             </el-button>
             <el-button size="mini" type="danger" @click="openReset(scope.row)">Reset Password</el-button>
+            <el-button size="mini" type="danger" plain icon="el-icon-delete" @click="handleDelete(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -60,6 +62,17 @@
         @current-change="getList"
       />
     </el-card>
+
+    <el-dialog title="Employee Detail" :visible.sync="detailVisible" width="520px">
+      <div v-loading="detailLoading" class="detail-list">
+        <div class="detail-row"><span>ID</span><strong>{{ detail.id || '-' }}</strong></div>
+        <div class="detail-row"><span>Username</span><strong>{{ detail.username || '-' }}</strong></div>
+        <div class="detail-row"><span>Name</span><strong>{{ detail.real_name || '-' }}</strong></div>
+        <div class="detail-row"><span>Phone</span><strong>{{ detail.phone || '-' }}</strong></div>
+        <div class="detail-row"><span>Email</span><strong>{{ detail.email || '-' }}</strong></div>
+        <div class="detail-row"><span>Status</span><strong>{{ detail.status === 1 ? 'Active' : 'Disabled' }}</strong></div>
+      </div>
+    </el-dialog>
 
     <el-dialog :title="isEdit ? 'Edit Employee' : 'New Employee'" :visible.sync="dialogVisible" width="520px">
       <el-form ref="employeeForm" :model="form" :rules="rules" label-width="90px">
@@ -102,10 +115,12 @@
 <script>
 import {
   employeeList,
+  employeeDetail,
   employeeCreate,
   employeeUpdate,
   employeeStatus,
-  employeeResetPassword
+  employeeResetPassword,
+  employeeDelete
 } from '@/api/employee'
 
 const emptyForm = () => ({
@@ -133,6 +148,9 @@ export default {
         status: ''
       },
       dialogVisible: false,
+      detailVisible: false,
+      detailLoading: false,
+      detail: {},
       resetVisible: false,
       isEdit: false,
       form: emptyForm(),
@@ -184,6 +202,16 @@ export default {
       this.page = 1
       this.getList()
     },
+    async openDetail(row) {
+      this.detailVisible = true
+      this.detailLoading = true
+      try {
+        const res = await employeeDetail({ id: row.id })
+        this.detail = res.data.employee || {}
+      } finally {
+        this.detailLoading = false
+      }
+    },
     openCreate() {
       this.isEdit = false
       this.form = emptyForm()
@@ -229,6 +257,17 @@ export default {
         this.getList()
       }).catch(() => {})
     },
+    handleDelete(row) {
+      this.$confirm(`Delete employee ${row.username}? This action cannot be undone.`, 'Warning', {
+        type: 'warning',
+        confirmButtonText: 'Delete'
+      }).then(async() => {
+        await employeeDelete({ id: row.id })
+        this.$message.success('Employee deleted successfully')
+        if (this.list.length === 1 && this.page > 1) this.page -= 1
+        this.getList()
+      }).catch(() => {})
+    },
     openReset(row) {
       this.resetForm = { id: row.id, password: '' }
       this.resetVisible = true
@@ -266,5 +305,23 @@ export default {
 .pagination {
   margin-top: 16px;
   text-align: right;
+}
+.detail-list {
+  min-height: 120px;
+}
+.detail-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #ebeef5;
+}
+.detail-row span {
+  color: #909399;
+}
+.detail-row strong {
+  overflow-wrap: anywhere;
+  font-weight: 500;
+  color: #303133;
 }
 </style>

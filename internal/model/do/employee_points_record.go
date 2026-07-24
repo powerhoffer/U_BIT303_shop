@@ -19,6 +19,7 @@ type EmployeePointsRecord struct {
 	BeforeBalance      any         // Balance before change
 	AfterBalance       any         // Balance after change
 	OperatorEmployeeId any         // Operator employee ID
+	OperatorAdminId    any         // Operator admin ID
 	Remark             any         // Remark
 	CreatedAt          *gtime.Time // Created time
 }

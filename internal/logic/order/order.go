@@ -251,6 +251,9 @@ func (s *sOrder) Cancel(ctx context.Context, in model.OrderCancelInput) (out mod
 			return errors.New("Credit account does not exist")
 		}
 		beforeBalance := account.Balance
+		if order.TotalPoints > uint(math.MaxUint32)-beforeBalance {
+			return errors.New("Credit balance exceeds allowed maximum")
+		}
 		afterBalance := beforeBalance + order.TotalPoints
 		if _, err = dao.EmployeePointsAccount.Ctx(ctx).
 			Where(dao.EmployeePointsAccount.Columns().Id, account.Id).
@@ -512,7 +515,7 @@ func (s *sOrder) ManageCancel(ctx context.Context, in model.BackendOrderCancelIn
 		if err = s.restoreStock(ctx, items, consts.StockBizTypeAdminOrderCancel, order.Id, consts.StockOperatorTypeAdmin, in.OperatorAdminId); err != nil {
 			return err
 		}
-		if err = s.refundPoints(ctx, order, 0, "Backend cancel order refund: "+order.OrderNo); err != nil {
+		if err = s.refundPoints(ctx, order, 0, in.OperatorAdminId, "Backend cancel order refund: "+order.OrderNo); err != nil {
 			return err
 		}
 		if _, err = dao.OrderInfo.Ctx(ctx).
@@ -624,7 +627,7 @@ func (s *sOrder) restoreStock(ctx context.Context, items []model.OrderGoodsItem,
 	return nil
 }
 
-func (s *sOrder) refundPoints(ctx context.Context, order entity.OrderInfo, operatorEmployeeId uint, remark string) error {
+func (s *sOrder) refundPoints(ctx context.Context, order entity.OrderInfo, operatorEmployeeId, operatorAdminId uint, remark string) error {
 	account, err := s.getPointsAccountForUpdate(ctx, order.EmployeeId)
 	if err != nil {
 		return err
@@ -633,6 +636,9 @@ func (s *sOrder) refundPoints(ctx context.Context, order entity.OrderInfo, opera
 		return errors.New("Credit account does not exist")
 	}
 	beforeBalance := account.Balance
+	if order.TotalPoints > uint(math.MaxUint32)-beforeBalance {
+		return errors.New("Credit balance exceeds allowed maximum")
+	}
 	afterBalance := beforeBalance + order.TotalPoints
 	if _, err = dao.EmployeePointsAccount.Ctx(ctx).
 		Where(dao.EmployeePointsAccount.Columns().Id, account.Id).
@@ -647,6 +653,7 @@ func (s *sOrder) refundPoints(ctx context.Context, order entity.OrderInfo, opera
 		BeforeBalance:      beforeBalance,
 		AfterBalance:       afterBalance,
 		OperatorEmployeeId: operatorEmployeeId,
+		OperatorAdminId:    operatorAdminId,
 		Remark:             remark,
 	}).Insert()
 	return err

@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"math"
+	"sort"
 
 	"bit303_shop/internal/consts"
 	"bit303_shop/internal/dao"
@@ -15,6 +17,8 @@ import (
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 )
+
+const maxBatchPointsEmployees = 200
 
 type sPoints struct{}
 
@@ -53,11 +57,59 @@ func (s *sPoints) ManageAdd(ctx context.Context, in model.PointsChangeInput) (ou
 	return s.changePoints(ctx, in, consts.PointsChangeTypeAdd)
 }
 
+func (s *sPoints) ManageBatchAdd(ctx context.Context, in model.PointsBatchAddInput) (out model.PointsBatchAddOutput, err error) {
+	if in.OperatorAdminId == 0 {
+		return out, errors.New("Admin identity is required")
+	}
+	if in.Points == 0 {
+		return out, errors.New("Credits must be greater than 0")
+	}
+	employeeIds, err := normalizeBatchEmployeeIds(in.EmployeeIds)
+	if err != nil {
+		return out, err
+	}
+
+	results := make([]model.PointsBatchAddResultItem, 0, len(employeeIds))
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		if err := s.validateEmployeesForUpdate(ctx, employeeIds); err != nil {
+			return err
+		}
+		for _, employeeId := range employeeIds {
+			changeOut, err := s.applyPointsChange(ctx, model.PointsChangeInput{
+				EmployeeId:      employeeId,
+				OperatorAdminId: in.OperatorAdminId,
+				Points:          in.Points,
+				Remark:          in.Remark,
+			}, consts.PointsChangeTypeAdd)
+			if err != nil {
+				return err
+			}
+			results = append(results, model.PointsBatchAddResultItem{
+				EmployeeId: employeeId,
+				Balance:    changeOut.Balance,
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return out, err
+	}
+	out = model.PointsBatchAddOutput{
+		ProcessedCount: len(results),
+		TotalPoints:    uint64(len(results)) * uint64(in.Points),
+		List:           results,
+	}
+	return out, nil
+}
+
 func (s *sPoints) ManageDeduct(ctx context.Context, in model.PointsChangeInput) (out model.PointsChangeOutput, err error) {
 	return s.changePoints(ctx, in, consts.PointsChangeTypeDeduct)
 }
 
 func (s *sPoints) changePoints(ctx context.Context, in model.PointsChangeInput, changeType int) (out model.PointsChangeOutput, err error) {
+	if in.OperatorAdminId == 0 {
+		return out, errors.New("Admin identity is required")
+	}
 	if in.Points == 0 {
 		return out, errors.New("Credits must be greater than 0")
 	}
@@ -66,65 +118,122 @@ func (s *sPoints) changePoints(ctx context.Context, in model.PointsChangeInput, 
 	}
 
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
-		account, err := s.getAccountForUpdate(ctx, in.EmployeeId)
-		if err != nil {
-			return err
+		changeOut, changeErr := s.applyPointsChange(ctx, in, changeType)
+		if changeErr != nil {
+			return changeErr
 		}
-		if account.Id == 0 {
-			if changeType == consts.PointsChangeTypeDeduct {
-				return errors.New("Insufficient credit balance")
-			}
-			if _, err = dao.EmployeePointsAccount.Ctx(ctx).Data(do.EmployeePointsAccount{
-				EmployeeId: in.EmployeeId,
-				Balance:    0,
-				Status:     consts.PointsAccountStatusNormal,
-			}).Insert(); err != nil {
-				return err
-			}
-			account, err = s.getAccountForUpdate(ctx, in.EmployeeId)
-			if err != nil {
-				return err
-			}
-		}
-		if account.Status != consts.PointsAccountStatusNormal {
-			return errors.New("Credit account is disabled")
-		}
-
-		beforeBalance := account.Balance
-		afterBalance := beforeBalance
-		switch changeType {
-		case consts.PointsChangeTypeAdd:
-			afterBalance = beforeBalance + in.Points
-		case consts.PointsChangeTypeDeduct:
-			if beforeBalance < in.Points {
-				return errors.New("Insufficient credit balance")
-			}
-			afterBalance = beforeBalance - in.Points
-		default:
-			return errors.New("Credit change type is invalid")
-		}
-
-		if _, err = dao.EmployeePointsAccount.Ctx(ctx).
-			Where(dao.EmployeePointsAccount.Columns().Id, account.Id).
-			Data(g.Map{dao.EmployeePointsAccount.Columns().Balance: afterBalance}).
-			Update(); err != nil {
-			return err
-		}
-		if _, err = dao.EmployeePointsRecord.Ctx(ctx).Data(do.EmployeePointsRecord{
-			EmployeeId:         in.EmployeeId,
-			ChangeType:         changeType,
-			Points:             in.Points,
-			BeforeBalance:      beforeBalance,
-			AfterBalance:       afterBalance,
-			OperatorEmployeeId: in.OperatorEmployeeId,
-			Remark:             in.Remark,
-		}).Insert(); err != nil {
-			return err
-		}
-		out.Balance = afterBalance
+		out = changeOut
 		return nil
 	})
 	return out, err
+}
+
+func (s *sPoints) applyPointsChange(ctx context.Context, in model.PointsChangeInput, changeType int) (out model.PointsChangeOutput, err error) {
+	account, err := s.getAccountForUpdate(ctx, in.EmployeeId)
+	if err != nil {
+		return out, err
+	}
+	if account.Id == 0 {
+		if changeType == consts.PointsChangeTypeDeduct {
+			return out, errors.New("Insufficient credit balance")
+		}
+		if _, err = dao.EmployeePointsAccount.Ctx(ctx).Data(do.EmployeePointsAccount{
+			EmployeeId: in.EmployeeId,
+			Balance:    0,
+			Status:     consts.PointsAccountStatusNormal,
+		}).Insert(); err != nil {
+			return out, err
+		}
+		account, err = s.getAccountForUpdate(ctx, in.EmployeeId)
+		if err != nil {
+			return out, err
+		}
+		if account.Id == 0 {
+			return out, errors.New("Credit account could not be initialized")
+		}
+	}
+	if account.Status != consts.PointsAccountStatusNormal {
+		return out, errors.New("Credit account is disabled")
+	}
+
+	beforeBalance := account.Balance
+	afterBalance := beforeBalance
+	switch changeType {
+	case consts.PointsChangeTypeAdd:
+		if in.Points > uint(math.MaxUint32)-beforeBalance {
+			return out, errors.New("Credit balance exceeds allowed maximum")
+		}
+		afterBalance = beforeBalance + in.Points
+	case consts.PointsChangeTypeDeduct:
+		if beforeBalance < in.Points {
+			return out, errors.New("Insufficient credit balance")
+		}
+		afterBalance = beforeBalance - in.Points
+	default:
+		return out, errors.New("Credit change type is invalid")
+	}
+
+	if _, err = dao.EmployeePointsAccount.Ctx(ctx).
+		Where(dao.EmployeePointsAccount.Columns().Id, account.Id).
+		Data(g.Map{dao.EmployeePointsAccount.Columns().Balance: afterBalance}).
+		Update(); err != nil {
+		return out, err
+	}
+	if _, err = dao.EmployeePointsRecord.Ctx(ctx).Data(do.EmployeePointsRecord{
+		EmployeeId:         in.EmployeeId,
+		ChangeType:         changeType,
+		Points:             in.Points,
+		BeforeBalance:      beforeBalance,
+		AfterBalance:       afterBalance,
+		OperatorEmployeeId: in.OperatorEmployeeId,
+		OperatorAdminId:    in.OperatorAdminId,
+		Remark:             in.Remark,
+	}).Insert(); err != nil {
+		return out, err
+	}
+	out.Balance = afterBalance
+	return out, nil
+}
+
+func normalizeBatchEmployeeIds(employeeIds []uint) ([]uint, error) {
+	if len(employeeIds) == 0 {
+		return nil, errors.New("At least one employee is required")
+	}
+	if len(employeeIds) > maxBatchPointsEmployees {
+		return nil, errors.New("A batch can contain at most 200 employees")
+	}
+	seen := make(map[uint]struct{}, len(employeeIds))
+	ids := make([]uint, 0, len(employeeIds))
+	for _, employeeId := range employeeIds {
+		if employeeId == 0 {
+			return nil, errors.New("Employee ID is invalid")
+		}
+		if _, exists := seen[employeeId]; exists {
+			return nil, errors.New("Employee IDs must not contain duplicates")
+		}
+		seen[employeeId] = struct{}{}
+		ids = append(ids, employeeId)
+	}
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	return ids, nil
+}
+
+func (s *sPoints) validateEmployeesForUpdate(ctx context.Context, employeeIds []uint) error {
+	columns := dao.EmployeeInfo.Columns()
+	var employees []entity.EmployeeInfo
+	if err := dao.EmployeeInfo.Ctx(ctx).
+		WhereIn(columns.Id, employeeIds).
+		Where(columns.Status, consts.EmployeeStatusNormal).
+		WhereNull(columns.DeletedAt).
+		OrderAsc(columns.Id).
+		LockUpdate().
+		Scan(&employees); err != nil {
+		return err
+	}
+	if len(employees) != len(employeeIds) {
+		return errors.New("One or more employee accounts do not exist or are disabled")
+	}
+	return nil
 }
 
 func (s *sPoints) recordsByEmployee(ctx context.Context, in model.PointsRecordsInput) (out model.PointsRecordsOutput, err error) {
@@ -214,6 +323,7 @@ func toRecordItem(record entity.EmployeePointsRecord) model.PointsRecordItem {
 		BeforeBalance:      record.BeforeBalance,
 		AfterBalance:       record.AfterBalance,
 		OperatorEmployeeId: record.OperatorEmployeeId,
+		OperatorAdminId:    record.OperatorAdminId,
 		Remark:             record.Remark,
 	}
 	if record.CreatedAt != nil {

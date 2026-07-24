@@ -41,10 +41,10 @@ func (c *cPoints) Records(ctx context.Context, req *backendApi.PointsRecordsReq)
 
 func (c *cPoints) ManageAdd(ctx context.Context, req *backendApi.PointsManageAddReq) (res *backendApi.PointsManageAddRes, err error) {
 	out, err := service.Points().ManageAdd(ctx, model.PointsChangeInput{
-		EmployeeId:         req.EmployeeId,
-		OperatorEmployeeId: currentEmployeeId(ctx),
-		Points:             req.Points,
-		Remark:             req.Remark,
+		EmployeeId:      req.EmployeeId,
+		OperatorAdminId: currentAdminId(ctx),
+		Points:          req.Points,
+		Remark:          req.Remark,
 	})
 	if err != nil {
 		return nil, err
@@ -52,12 +52,36 @@ func (c *cPoints) ManageAdd(ctx context.Context, req *backendApi.PointsManageAdd
 	return &backendApi.PointsManageAddRes{Balance: out.Balance}, nil
 }
 
+func (c *cPoints) ManageBatchAdd(ctx context.Context, req *backendApi.PointsManageBatchAddReq) (res *backendApi.PointsManageBatchAddRes, err error) {
+	out, err := service.Points().ManageBatchAdd(ctx, model.PointsBatchAddInput{
+		EmployeeIds:     req.EmployeeIds,
+		OperatorAdminId: currentAdminId(ctx),
+		Points:          req.Points,
+		Remark:          req.Remark,
+	})
+	if err != nil {
+		return nil, err
+	}
+	list := make([]backendApi.PointsBatchAddResultItem, 0, len(out.List))
+	for _, item := range out.List {
+		list = append(list, backendApi.PointsBatchAddResultItem{
+			EmployeeId: item.EmployeeId,
+			Balance:    item.Balance,
+		})
+	}
+	return &backendApi.PointsManageBatchAddRes{
+		ProcessedCount: out.ProcessedCount,
+		TotalPoints:    out.TotalPoints,
+		List:           list,
+	}, nil
+}
+
 func (c *cPoints) ManageDeduct(ctx context.Context, req *backendApi.PointsManageDeductReq) (res *backendApi.PointsManageDeductRes, err error) {
 	out, err := service.Points().ManageDeduct(ctx, model.PointsChangeInput{
-		EmployeeId:         req.EmployeeId,
-		OperatorEmployeeId: currentEmployeeId(ctx),
-		Points:             req.Points,
-		Remark:             req.Remark,
+		EmployeeId:      req.EmployeeId,
+		OperatorAdminId: currentAdminId(ctx),
+		Points:          req.Points,
+		Remark:          req.Remark,
 	})
 	if err != nil {
 		return nil, err
@@ -93,6 +117,7 @@ func toApiRecords(in []model.PointsRecordItem) []backendApi.PointsRecordItem {
 			BeforeBalance:      item.BeforeBalance,
 			AfterBalance:       item.AfterBalance,
 			OperatorEmployeeId: item.OperatorEmployeeId,
+			OperatorAdminId:    item.OperatorAdminId,
 			Remark:             item.Remark,
 			CreatedAt:          item.CreatedAt,
 		})

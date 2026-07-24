@@ -16,6 +16,7 @@ type (
 		Records(ctx context.Context, in model.PointsRecordsInput) (out model.PointsRecordsOutput, err error)
 		ManageRecords(ctx context.Context, in model.PointsRecordsInput) (out model.PointsRecordsOutput, err error)
 		ManageAdd(ctx context.Context, in model.PointsChangeInput) (out model.PointsChangeOutput, err error)
+		ManageBatchAdd(ctx context.Context, in model.PointsBatchAddInput) (out model.PointsBatchAddOutput, err error)
 		ManageDeduct(ctx context.Context, in model.PointsChangeInput) (out model.PointsChangeOutput, err error)
 	}
 )

@@ -17,6 +17,7 @@ type EmployeePointsRecord struct {
 	BeforeBalance      uint        `json:"beforeBalance"      orm:"before_balance"       ` // Balance before change
 	AfterBalance       uint        `json:"afterBalance"       orm:"after_balance"        ` // Balance after change
 	OperatorEmployeeId uint        `json:"operatorEmployeeId" orm:"operator_employee_id" ` // Operator employee ID
+	OperatorAdminId    uint        `json:"operatorAdminId"    orm:"operator_admin_id"    ` // Operator admin ID
 	Remark             string      `json:"remark"             orm:"remark"               ` // Remark
 	CreatedAt          *gtime.Time `json:"createdAt"          orm:"created_at"           ` // Created time
 }

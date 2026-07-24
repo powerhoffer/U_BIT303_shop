@@ -28,6 +28,7 @@ type EmployeePointsRecordColumns struct {
 	BeforeBalance      string // Balance before change
 	AfterBalance       string // Balance after change
 	OperatorEmployeeId string // Operator employee ID
+	OperatorAdminId    string // Operator admin ID
 	Remark             string // Remark
 	CreatedAt          string // Created time
 }
@@ -41,6 +42,7 @@ var employeePointsRecordColumns = EmployeePointsRecordColumns{
 	BeforeBalance:      "before_balance",
 	AfterBalance:       "after_balance",
 	OperatorEmployeeId: "operator_employee_id",
+	OperatorAdminId:    "operator_admin_id",
 	Remark:             "remark",
 	CreatedAt:          "created_at",
 }

@@ -22,12 +22,31 @@ type PointsRecordsOutput struct {
 type PointsChangeInput struct {
 	EmployeeId         uint
 	OperatorEmployeeId uint
+	OperatorAdminId    uint
 	Points             uint
 	Remark             string
 }
 
 type PointsChangeOutput struct {
 	Balance uint
+}
+
+type PointsBatchAddInput struct {
+	EmployeeIds     []uint
+	OperatorAdminId uint
+	Points          uint
+	Remark          string
+}
+
+type PointsBatchAddOutput struct {
+	ProcessedCount int
+	TotalPoints    uint64
+	List           []PointsBatchAddResultItem
+}
+
+type PointsBatchAddResultItem struct {
+	EmployeeId uint
+	Balance    uint
 }
 
 type PointsRecordItem struct {
@@ -38,6 +57,7 @@ type PointsRecordItem struct {
 	BeforeBalance      uint
 	AfterBalance       uint
 	OperatorEmployeeId uint
+	OperatorAdminId    uint
 	Remark             string
 	CreatedAt          time.Time
 }

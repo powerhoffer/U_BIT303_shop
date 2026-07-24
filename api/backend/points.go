@@ -38,6 +38,24 @@ type PointsManageAddRes struct {
 	Balance uint `json:"balance"`
 }
 
+type PointsManageBatchAddReq struct {
+	g.Meta      `path:"/points/manage/batch-add" method:"post" tags:"Backend Credits" summary:"Batch add employee credits"`
+	EmployeeIds []uint `json:"employee_ids" v:"required#Employee IDs are required"`
+	Points      uint   `json:"points" v:"required|min:1#Credits are required|Credits must be greater than 0"`
+	Remark      string `json:"remark" v:"max-length:255#Remark must be at most 255 characters"`
+}
+
+type PointsManageBatchAddRes struct {
+	ProcessedCount int                        `json:"processed_count"`
+	TotalPoints    uint64                     `json:"total_points"`
+	List           []PointsBatchAddResultItem `json:"list"`
+}
+
+type PointsBatchAddResultItem struct {
+	EmployeeId uint `json:"employee_id"`
+	Balance    uint `json:"balance"`
+}
+
 type PointsManageDeductReq struct {
 	g.Meta     `path:"/points/manage/deduct" method:"post" tags:"Backend Credits" summary:"Deduct employee credits"`
 	EmployeeId uint   `json:"employee_id" v:"required|min:1#Employee ID is required|Employee ID is invalid"`
@@ -71,6 +89,7 @@ type PointsRecordItem struct {
 	BeforeBalance      uint      `json:"before_balance"`
 	AfterBalance       uint      `json:"after_balance"`
 	OperatorEmployeeId uint      `json:"operator_employee_id"`
+	OperatorAdminId    uint      `json:"operator_admin_id"`
 	Remark             string    `json:"remark"`
 	CreatedAt          time.Time `json:"created_at"`
 }

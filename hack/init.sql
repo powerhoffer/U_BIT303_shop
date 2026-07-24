@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS `employee_points_record` (
   `before_balance` int unsigned NOT NULL COMMENT '变动前积分',
   `after_balance` int unsigned NOT NULL COMMENT '变动后积分',
   `operator_employee_id` int unsigned NOT NULL DEFAULT 0 COMMENT '操作员工ID',
+  `operator_admin_id` int unsigned NOT NULL DEFAULT 0 COMMENT 'Operator admin ID',
   `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
@@ -49,6 +50,22 @@ CREATE TABLE IF NOT EXISTS `employee_points_record` (
   KEY `idx_points_record_operator` (`operator_employee_id`),
   KEY `idx_points_record_change_type` (`change_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='员工积分流水表';
+
+SET @points_operator_admin_column_exists = (
+  SELECT COUNT(*)
+  FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'employee_points_record'
+    AND COLUMN_NAME = 'operator_admin_id'
+);
+SET @points_operator_admin_column_sql = IF(
+  @points_operator_admin_column_exists = 0,
+  'ALTER TABLE `employee_points_record` ADD COLUMN `operator_admin_id` int unsigned NOT NULL DEFAULT 0 COMMENT ''Operator admin ID'' AFTER `operator_employee_id`',
+  'SELECT 1'
+);
+PREPARE points_operator_admin_column_stmt FROM @points_operator_admin_column_sql;
+EXECUTE points_operator_admin_column_stmt;
+DEALLOCATE PREPARE points_operator_admin_column_stmt;
 
 CREATE TABLE IF NOT EXISTS `goods_category` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '商品分类ID',
@@ -297,6 +314,7 @@ INSERT INTO admin_permission (name, group_name, method, path, status) VALUES
 ('Reset employee password', 'Employee Management', 'POST', '/backend/employee/manage/reset-password', 1),
 ('Delete employee', 'Employee Management', 'POST', '/backend/employee/manage/delete', 1),
 ('Add employee credits', 'Credit Management', 'POST', '/backend/points/manage/add', 1),
+('Batch add employee credits', 'Credit Management', 'POST', '/backend/points/manage/batch-add', 1),
 ('Deduct employee credits', 'Credit Management', 'POST', '/backend/points/manage/deduct', 1),
 ('Employee credit records', 'Credit Management', 'GET', '/backend/points/manage/records', 1),
 ('Backend category list', 'Goods Management', 'GET', '/backend/category/list', 1),

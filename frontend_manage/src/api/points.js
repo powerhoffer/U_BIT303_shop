@@ -23,6 +23,14 @@ export function pointsAdd(data) {
   })
 }
 
+export function pointsBatchAdd(data) {
+  return request({
+    url: '/backend/points/manage/batch-add',
+    method: 'post',
+    data
+  })
+}
+
 export function pointsDeduct(data) {
   return request({
     url: '/backend/points/manage/deduct',

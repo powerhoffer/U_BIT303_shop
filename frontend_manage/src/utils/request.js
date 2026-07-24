@@ -24,7 +24,7 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code !== 0) {
-      if (res.code === 401 || res.code === 403) {
+      if (res.code === 401) {
         store.dispatch('user/resetToken')
         if (router.currentRoute.path !== '/login') {
           router.replace(`/login?redirect=${router.currentRoute.fullPath}`)
